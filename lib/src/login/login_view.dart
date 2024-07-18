@@ -84,10 +84,8 @@ class _LoginViewState extends State<LoginView> {
                     }
                   : null, // Disable the button if fields are empty
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors
-                    .blue, // Corrected from 'primary' to 'backgroundColor'
-                foregroundColor: Colors
-                    .white, // Corrected from 'onPrimary' to 'foregroundColor'
+                backgroundColor: Colors.blue,
+                foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.0),
                 ),
