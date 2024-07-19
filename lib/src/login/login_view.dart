@@ -10,31 +10,41 @@ class LoginView extends StatefulWidget {
 }
 
 class _LoginViewState extends State<LoginView> {
-  final logo = '../../../assets/images/21888.png';
-
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _isPasswordVisible = false;
+  bool _isLoginButtonEnabled = false;
 
   @override
   void initState() {
     super.initState();
-    // Add listeners to enable/disable the login button based on input values
     _usernameController.addListener(_updateButtonState);
     _passwordController.addListener(_updateButtonState);
   }
 
   @override
   void dispose() {
-    // Dispose controllers to avoid memory leaks
     _usernameController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
   void _updateButtonState() {
-    // Trigger a rebuild whenever the text changes in either field
-    setState(() {});
+    final isButtonEnabled = _usernameController.text.isNotEmpty &&
+        _passwordController.text.isNotEmpty;
+    if (isButtonEnabled != _isLoginButtonEnabled) {
+      setState(() {
+        _isLoginButtonEnabled = isButtonEnabled;
+      });
+    }
+  }
+
+  void _attemptLogin() {
+    if (_formKey.currentState!.validate()) {
+      // Proceed with login logic
+      Navigator.pushNamed(context, '/home');
+    }
   }
 
   @override
@@ -42,59 +52,69 @@ class _LoginViewState extends State<LoginView> {
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset(logo),
-            const SizedBox(height: 20),
-            TextField(
-              controller: _usernameController,
-              decoration: const InputDecoration(
-                labelText: 'Username',
-                border: OutlineInputBorder(),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset('assets/images/21888.png'),
+              const SizedBox(height: 20),
+              TextFormField(
+                controller: _usernameController,
+                decoration: const InputDecoration(
+                  labelText: 'Username',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your username';
+                  }
+                  return null;
+                },
               ),
-            ),
-            const SizedBox(height: 10),
-            TextField(
-              controller: _passwordController,
-              obscureText: !_isPasswordVisible,
-              decoration: InputDecoration(
-                labelText: 'Password',
-                border: const OutlineInputBorder(),
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _isPasswordVisible
-                        ? Icons.visibility
-                        : Icons.visibility_off,
+              const SizedBox(height: 10),
+              TextFormField(
+                controller: _passwordController,
+                obscureText: !_isPasswordVisible,
+                decoration: InputDecoration(
+                  labelText: 'Password',
+                  border: const OutlineInputBorder(),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _isPasswordVisible
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _isPasswordVisible = !_isPasswordVisible;
+                      });
+                    },
                   ),
-                  onPressed: () {
-                    setState(() {
-                      _isPasswordVisible = !_isPasswordVisible;
-                    });
-                  },
                 ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your password';
+                  }
+                  return null;
+                },
               ),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _usernameController.text.isNotEmpty &&
-                      _passwordController.text.isNotEmpty
-                  ? () {
-                      Navigator.pushNamed(context, '/home');
-                    }
-                  : null, // Disable the button if fields are empty
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _isLoginButtonEnabled ? _attemptLogin : null,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
                 ),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                child: const Text('Login'),
               ),
-              child: const Text('Login'),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
