@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:pde_worksheet/src/worksheet/create_worksheet_view.dart';
 
 import 'settings/settings_controller.dart';
 import 'settings/settings_view.dart';
@@ -73,6 +74,8 @@ class MyApp extends StatelessWidget {
                     return const LoginView();
                   case HomeView.routeName:
                     return const HomeView();
+                  case CreateWorksheet.routeName:
+                    return const CreateWorksheet();
                   default:
                     return Scaffold(
                       body: Center(

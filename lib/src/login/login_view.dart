@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pde_worksheet/src/home/home_view.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -14,14 +15,6 @@ class _LoginViewState extends State<LoginView> {
   final TextEditingController _passwordController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _isPasswordVisible = false;
-  bool _isLoginButtonEnabled = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _usernameController.addListener(_updateButtonState);
-    _passwordController.addListener(_updateButtonState);
-  }
 
   @override
   void dispose() {
@@ -30,20 +23,14 @@ class _LoginViewState extends State<LoginView> {
     super.dispose();
   }
 
-  void _updateButtonState() {
-    final isButtonEnabled = _usernameController.text.isNotEmpty &&
-        _passwordController.text.isNotEmpty;
-    if (isButtonEnabled != _isLoginButtonEnabled) {
-      setState(() {
-        _isLoginButtonEnabled = isButtonEnabled;
-      });
-    }
-  }
-
   void _attemptLogin() {
     if (_formKey.currentState!.validate()) {
+      print('Username: ${_usernameController.text}');
+      print('Password: ${_passwordController.text}');
       // Proceed with login logic
-      Navigator.pushNamed(context, '/home');
+      Navigator.replace(context,
+          oldRoute: ModalRoute.of(context)!,
+          newRoute: MaterialPageRoute(builder: (context) => const HomeView()));
     }
   }
 
@@ -57,7 +44,7 @@ class _LoginViewState extends State<LoginView> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset('assets/images/21888.png'),
+              Image.asset('assets/images/21888.png', width: 150),
               const SizedBox(height: 20),
               TextFormField(
                 controller: _usernameController,
@@ -101,7 +88,7 @@ class _LoginViewState extends State<LoginView> {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: _isLoginButtonEnabled ? _attemptLogin : null,
+                onPressed: _attemptLogin,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
                   foregroundColor: Colors.white,
