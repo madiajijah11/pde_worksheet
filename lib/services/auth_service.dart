@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:pde_worksheet/models/auth_state.dart';
 import 'package:pde_worksheet/notifiers/auth_notifier.dart';
+import 'package:pde_worksheet/store/store.dart';
 
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
   return AuthNotifier();
@@ -20,6 +21,7 @@ class AuthService {
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
+      await SecureStorage.write('token', data['token']);
       return data['token'];
     }
     return null;

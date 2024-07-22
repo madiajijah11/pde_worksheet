@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-import 'package:pde_worksheet/models/auth_state.dart';
 import 'package:pde_worksheet/src/worksheet/create_worksheet_view.dart';
 import 'package:pde_worksheet/src/settings/settings_controller.dart';
 import 'package:pde_worksheet/src/settings/settings_view.dart';
 import 'package:pde_worksheet/src/login/login_view.dart';
 import 'package:pde_worksheet/src/home/home_view.dart';
+import 'package:pde_worksheet/store/store.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({
@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate, // Corrected spelling
           ],
           supportedLocales: const [
             Locale('en', ''),
@@ -45,59 +45,49 @@ class MyApp extends StatelessWidget {
   }
 
   Route<dynamic>? _generateRoute(RouteSettings settings) {
-    // Assuming you have an AuthService that provides a method to check if the user is authenticated
-    // This is a placeholder, replace with your actual authentication check logic
-    final bool isAuthenticated = AuthState().isAuthenticated;
+    // Adjusted for synchronous operation with FutureBuilder
+    return MaterialPageRoute<void>(
+      settings: settings,
+      builder: (BuildContext context) {
+        return FutureBuilder<String?>(
+          future: SecureStorage.read("token"), // Asynchronously fetch the token
+          builder: (context, snapshot) {
+            final String? token = snapshot.data;
 
-    // Define the routes that require authentication
-    const List<String> protectedRoutes = [
-      HomeView.routeName,
-      CreateWorksheet.routeName,
-      // Add other protected route names here
-    ];
+            // Define the routes that require authentication
+            const List<String> protectedRoutes = [
+              HomeView.routeName,
+              CreateWorksheetView.routeName,
+              // Add other protected route names here
+            ];
 
-    // Check if the requested route is protected and the user is not authenticated
-    if (protectedRoutes.contains(settings.name) && !isAuthenticated) {
-      // Redirect to the LoginView
-      return MaterialPageRoute<void>(
-        settings: settings,
-        builder: (BuildContext context) => const LoginView(),
-      );
-    }
+            // Check if the requested route is protected and the user is not authenticated
+            if (protectedRoutes.contains(settings.name) && token == null) {
+              // Redirect to the LoginView
+              return const LoginView();
+            }
 
-    // Existing route generation logic
-    switch (settings.name) {
-      case SettingsView.routeName:
-        return MaterialPageRoute<void>(
-          settings: settings,
-          builder: (BuildContext context) =>
-              SettingsView(controller: settingsController),
+            // Existing route generation logic
+            switch (settings.name) {
+              case SettingsView.routeName:
+                return SettingsView(controller: settingsController);
+              case LoginView.routeName:
+                return const LoginView();
+              case HomeView.routeName:
+                return const HomeView();
+              case CreateWorksheetView.routeName:
+                return const CreateWorksheetView();
+              default:
+                // Handle undefined routes
+                return Scaffold(
+                  body: Center(
+                    child: Text('No route defined for ${settings.name}'),
+                  ),
+                );
+            }
+          },
         );
-      case LoginView.routeName:
-        return MaterialPageRoute<void>(
-          settings: settings,
-          builder: (BuildContext context) => const LoginView(),
-        );
-      case HomeView.routeName:
-        return MaterialPageRoute<void>(
-          settings: settings,
-          builder: (BuildContext context) => const HomeView(),
-        );
-      case CreateWorksheet.routeName:
-        return MaterialPageRoute<void>(
-          settings: settings,
-          builder: (BuildContext context) => const CreateWorksheet(),
-        );
-      default:
-        // Handle undefined routes
-        return MaterialPageRoute<void>(
-          settings: settings,
-          builder: (BuildContext context) => Scaffold(
-            body: Center(
-              child: Text('No route defined for ${settings.name}'),
-            ),
-          ),
-        );
-    }
+      },
+    );
   }
 }

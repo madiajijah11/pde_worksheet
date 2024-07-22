@@ -26,7 +26,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
             usernameController.text,
             passwordController.text,
           );
-      final isAuthenticated = ref.read(authProvider).isAuthenticated;
+      final isAuthenticated = ref.read(authProvider).token != null;
       if (!mounted) return; // Check if the widget is still in the tree
       if (isAuthenticated) {
         Navigator.pushReplacement(
@@ -96,26 +96,19 @@ class _LoginViewState extends ConsumerState<LoginView> {
                 },
               ),
               const SizedBox(height: 20),
-              Consumer(builder: (context, ref, _) {
-                bool isLoading = ref.watch(
-                    AuthState().isAuthenticated as ProviderListenable<bool>);
-
-                return isLoading
-                    ? const CircularProgressIndicator()
-                    : ElevatedButton(
-                        onPressed: () => _attemptLogin(ref),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 50, vertical: 15),
-                        ),
-                        child: const Text('Login'),
-                      );
-              }),
+              ElevatedButton(
+                onPressed: () => _attemptLogin(ref),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                ),
+                child: const Text('Login'),
+              )
             ],
           ),
         ),

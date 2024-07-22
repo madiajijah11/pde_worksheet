@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:pde_worksheet/src/settings/settings_view.dart';
 
-class CreateWorksheet extends StatefulWidget {
-  const CreateWorksheet({super.key});
+class CreateWorksheetView extends StatefulWidget {
+  const CreateWorksheetView({super.key});
 
   static const routeName = '/create-worksheet';
 
   @override
-  State<CreateWorksheet> createState() => _CreateWorksheetState();
+  State<CreateWorksheetView> createState() => _CreateWorksheetViewState();
 }
 
-class _CreateWorksheetState extends State<CreateWorksheet> {
+class _CreateWorksheetViewState extends State<CreateWorksheetView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
