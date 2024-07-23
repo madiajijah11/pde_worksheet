@@ -50,9 +50,11 @@ class MyApp extends StatelessWidget {
       settings: settings,
       builder: (BuildContext context) {
         return FutureBuilder<String?>(
-          future: SecureStorage.read("token"), // Asynchronously fetch the token
+          future: SecureStorage.read("flutter.token"),
           builder: (context, snapshot) {
             final String? token = snapshot.data;
+
+            print(token);
 
             // Define the routes that require authentication
             const List<String> protectedRoutes = [

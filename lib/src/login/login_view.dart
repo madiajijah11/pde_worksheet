@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pde_worksheet/models/auth_state.dart';
-import 'package:pde_worksheet/notifiers/auth_notifier.dart';
 import 'package:pde_worksheet/services/auth_service.dart';
 import 'package:pde_worksheet/src/home/home_view.dart';
+import 'package:pde_worksheet/store/store.dart';
 
 class LoginView extends ConsumerStatefulWidget {
   const LoginView({super.key});
@@ -19,6 +18,12 @@ class _LoginViewState extends ConsumerState<LoginView> {
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
   bool isPasswordVisible = false;
+
+  @override
+  void initState() {
+    super.initState();
+    SecureStorage.init();
+  }
 
   void _attemptLogin(WidgetRef ref) async {
     if (formKey.currentState!.validate()) {
@@ -108,7 +113,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
                       const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
                 ),
                 child: const Text('Login'),
-              )
+              ),
             ],
           ),
         ),

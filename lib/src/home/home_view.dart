@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'package:pde_worksheet/src/settings/settings_view.dart';
-import 'package:pde_worksheet/models/worksheet_state.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
