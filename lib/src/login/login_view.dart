@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:auto_route/auto_route.dart';
+
+import 'package:pde_worksheet/routes/app_router.gr.dart';
 import 'package:pde_worksheet/services/auth_service.dart';
-import 'package:pde_worksheet/src/home/home_view.dart';
 import 'package:pde_worksheet/store/store.dart';
 
+@RoutePage(name: 'LoginRoute')
 class LoginView extends ConsumerStatefulWidget {
   const LoginView({super.key});
-
-  static const routeName = '/';
 
   @override
   ConsumerState<LoginView> createState() => _LoginViewState();
@@ -22,7 +23,6 @@ class _LoginViewState extends ConsumerState<LoginView> {
   @override
   void initState() {
     super.initState();
-    SecureStorage.init();
   }
 
   void _attemptLogin(WidgetRef ref) async {
@@ -32,12 +32,9 @@ class _LoginViewState extends ConsumerState<LoginView> {
             passwordController.text,
           );
       final isAuthenticated = ref.read(authProvider).token != null;
-      if (!mounted) return; // Check if the widget is still in the tree
+      if (!mounted) return;
       if (isAuthenticated) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const HomeView()),
-        );
+        AutoRouter.of(context).replace(const HomeRoute());
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(

@@ -12,8 +12,6 @@ final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
 
 class AuthService {
   Future<String?> login(String username, String password) async {
-    await SecureStorage.init();
-
     final baseUrl = dotenv.env['API'] ?? '';
     final response = await http.post(
       Uri.parse('$baseUrl/api/auth/signin'),

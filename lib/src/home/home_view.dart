@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:auto_route/auto_route.dart';
 
 import 'package:pde_worksheet/src/settings/settings_view.dart';
 
+@RoutePage(name: 'HomeRoute')
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
-
-  static const routeName = '/home';
 
   @override
   State<HomeView> createState() => _HomeViewState();

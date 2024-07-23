@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:auto_route/auto_route.dart';
+
 import 'package:pde_worksheet/src/settings/settings_view.dart';
 
+@RoutePage(name: 'CreateWorksheetRoute')
 class CreateWorksheetView extends StatefulWidget {
   const CreateWorksheetView({super.key});
-
-  static const routeName = '/create-worksheet';
 
   @override
   State<CreateWorksheetView> createState() => _CreateWorksheetViewState();
