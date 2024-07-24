@@ -137,3 +137,177 @@ class Network {
     );
   }
 }
+
+class NewWorksheetState {
+  final String worksheetNumber;
+  final String room;
+  final String startTime;
+  final String endTime;
+  final int userId;
+  final List<TechnicianItem> technicianItems;
+  final List<SoftwareItem> softwareItems;
+  final List<HardwareItem> hardwareItems;
+  final List<NetworkItem> networkItems;
+
+  NewWorksheetState({
+    required this.worksheetNumber,
+    required this.room,
+    required this.startTime,
+    required this.endTime,
+    required this.userId,
+    required this.technicianItems,
+    required this.softwareItems,
+    required this.hardwareItems,
+    required this.networkItems,
+  });
+
+  factory NewWorksheetState.fromJson(Map<String, dynamic> json) {
+    return NewWorksheetState(
+      worksheetNumber: json['worksheetNumber'],
+      room: json['room'],
+      startTime: json['startTime'],
+      endTime: json['endTime'],
+      userId: json['userId'],
+      technicianItems: (json['technicianItems'] as List)
+          .map((item) => TechnicianItem.fromJson(item))
+          .toList(),
+      softwareItems: (json['softwareItems'] as List)
+          .map((item) => SoftwareItem.fromJson(item))
+          .toList(),
+      hardwareItems: (json['hardwareItems'] as List)
+          .map((item) => HardwareItem.fromJson(item))
+          .toList(),
+      networkItems: (json['networkItems'] as List)
+          .map((item) => NetworkItem.fromJson(item))
+          .toList(),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'worksheetNumber': worksheetNumber,
+      'room': room,
+      'startTime': startTime,
+      'endTime': endTime,
+      'userId': userId,
+      'technicianItems': technicianItems.map((item) => item.toJson()).toList(),
+      'softwareItems': softwareItems.map((item) => item.toJson()).toList(),
+      'hardwareItems': hardwareItems.map((item) => item.toJson()).toList(),
+      'networkItems': networkItems.map((item) => item.toJson()).toList(),
+    };
+  }
+
+  @override
+  String toString() {
+    return 'NewWorksheetState(worksheetNumber: $worksheetNumber, room: $room, startTime: $startTime, endTime: $endTime, userId: $userId, technicianItems: $technicianItems, softwareItems: $softwareItems, hardwareItems: $hardwareItems, networkItems: $networkItems)';
+  }
+}
+
+class TechnicianItem {
+  final String id;
+
+  TechnicianItem({required this.id});
+
+  factory TechnicianItem.fromJson(Map<String, dynamic> json) {
+    return TechnicianItem(id: json['id']);
+  }
+
+  Map<String, dynamic> toJson() {
+    return {'id': id};
+  }
+
+  @override
+  String toString() {
+    return 'TechnicianItem(id: $id)';
+  }
+}
+
+class SoftwareItem {
+  final String name;
+  final String description;
+  final String result;
+
+  SoftwareItem(
+      {required this.name, required this.description, required this.result});
+
+  factory SoftwareItem.fromJson(Map<String, dynamic> json) {
+    return SoftwareItem(
+      name: json['name'],
+      description: json['description'],
+      result: json['result'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'description': description,
+      'result': result,
+    };
+  }
+
+  @override
+  String toString() {
+    return 'SoftwareItem(name: $name, description: $description, result: $result)';
+  }
+}
+
+class HardwareItem {
+  final String name;
+  final String description;
+  final String result;
+
+  HardwareItem(
+      {required this.name, required this.description, required this.result});
+
+  factory HardwareItem.fromJson(Map<String, dynamic> json) {
+    return HardwareItem(
+      name: json['name'],
+      description: json['description'],
+      result: json['result'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'description': description,
+      'result': result,
+    };
+  }
+
+  @override
+  String toString() {
+    return 'HardwareItem(name: $name, description: $description, result: $result)';
+  }
+}
+
+class NetworkItem {
+  final String name;
+  final String description;
+  final String result;
+
+  NetworkItem(
+      {required this.name, required this.description, required this.result});
+
+  factory NetworkItem.fromJson(Map<String, dynamic> json) {
+    return NetworkItem(
+      name: json['name'],
+      description: json['description'],
+      result: json['result'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'description': description,
+      'result': result,
+    };
+  }
+
+  @override
+  String toString() {
+    return 'NetworkItem(name: $name, description: $description, result: $result)';
+  }
+}
