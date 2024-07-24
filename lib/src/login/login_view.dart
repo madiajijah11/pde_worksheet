@@ -4,7 +4,6 @@ import 'package:auto_route/auto_route.dart';
 
 import 'package:pde_worksheet/routes/app_router.gr.dart';
 import 'package:pde_worksheet/services/auth_service.dart';
-import 'package:pde_worksheet/store/store.dart';
 
 @RoutePage(name: 'LoginRoute')
 class LoginView extends ConsumerStatefulWidget {
@@ -27,18 +26,27 @@ class _LoginViewState extends ConsumerState<LoginView> {
 
   void _attemptLogin(WidgetRef ref) async {
     if (formKey.currentState!.validate()) {
-      await ref.read(authProvider.notifier).login(
-            usernameController.text,
-            passwordController.text,
+      try {
+        await ref.read(authProvider.notifier).login(
+              usernameController.text,
+              passwordController.text,
+            );
+        final isAuthenticated = ref.read(authProvider).token != null;
+        if (!mounted) return;
+        if (isAuthenticated) {
+          AutoRouter.of(context).replace(const HomeRoute());
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Invalid username or password'),
+            ),
           );
-      final isAuthenticated = ref.read(authProvider).token != null;
-      if (!mounted) return;
-      if (isAuthenticated) {
-        AutoRouter.of(context).replace(const HomeRoute());
-      } else {
+        }
+      } catch (e) {
+        // Handle any exceptions that occur during the login attempt
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Invalid username or password'),
+          SnackBar(
+            content: Text('An error occurred: $e'),
           ),
         );
       }

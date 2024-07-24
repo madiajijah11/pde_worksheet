@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'src/app.dart';
 import 'src/settings/settings_controller.dart';
@@ -24,5 +25,7 @@ void main() async {
   // runApp(ProviderScope(
   //   child: MyApp(settingsController: settingsController),
   // ));
-  runApp(MyApp());
+  runApp(ProviderScope(
+    child: MyApp(),
+  ));
 }

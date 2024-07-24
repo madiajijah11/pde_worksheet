@@ -1,4 +1,4 @@
-class Worksheet {
+class WorksheetState {
   final int id;
   final String worksheetNumber;
   final String room;
@@ -10,7 +10,7 @@ class Worksheet {
   final List<Hardware> hardwares;
   final List<Network> networks;
 
-  Worksheet({
+  WorksheetState({
     required this.id,
     required this.worksheetNumber,
     required this.room,
@@ -23,8 +23,8 @@ class Worksheet {
     required this.networks,
   });
 
-  factory Worksheet.fromJson(Map<String, dynamic> json) {
-    return Worksheet(
+  factory WorksheetState.fromJson(Map<String, dynamic> json) {
+    return WorksheetState(
       id: json['id'],
       worksheetNumber: json['worksheetNumber'],
       room: json['room'],
@@ -44,6 +44,10 @@ class Worksheet {
           .map((network) => Network.fromJson(network))
           .toList(),
     );
+  }
+
+  static List<WorksheetState> fromJsonList(List<dynamic> jsonList) {
+    return jsonList.map((json) => WorksheetState.fromJson(json)).toList();
   }
 }
 
