@@ -72,6 +72,10 @@ class Technician {
       degrees: json['degrees'],
     );
   }
+
+  String get fullName {
+    return '${titles ?? ''} $name ${degrees ?? ''}'.trim();
+  }
 }
 
 class Software {
