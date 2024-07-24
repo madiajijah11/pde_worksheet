@@ -97,12 +97,16 @@ class _CreateWorksheetViewState extends State<CreateWorksheetView> {
           title: const Text('Create Worksheet'),
         ),
         body: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(8.0),
             child: Form(
                 key: _formKey,
                 child: ListView(children: [
                   Card(
                     margin: const EdgeInsets.symmetric(vertical: 8.0),
+                    elevation: 4.0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Column(

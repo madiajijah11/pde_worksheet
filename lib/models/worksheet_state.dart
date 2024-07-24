@@ -49,6 +49,11 @@ class WorksheetState {
   static List<WorksheetState> fromJsonList(List<dynamic> jsonList) {
     return jsonList.map((json) => WorksheetState.fromJson(json)).toList();
   }
+
+  @override
+  String toString() {
+    return 'WorksheetState(id: $id, worksheetNumber: $worksheetNumber, room: $room, startTime: $startTime, endTime: $endTime, userId: $userId, technicians: $technicians, softwares: $softwares, hardwares: $hardwares, networks: $networks)';
+  }
 }
 
 class Technician {
@@ -76,6 +81,11 @@ class Technician {
   String get fullName {
     return '${titles ?? ''} $name ${degrees ?? ''}'.trim();
   }
+
+  @override
+  String toString() {
+    return 'Technician(id: $id, titles: $titles, name: $name, degrees: $degrees)';
+  }
 }
 
 class Software {
@@ -95,6 +105,11 @@ class Software {
       description: json['description'],
       result: json['result'],
     );
+  }
+
+  @override
+  String toString() {
+    return 'Software(name: $name, description: $description, result: $result)';
   }
 }
 
@@ -116,6 +131,11 @@ class Hardware {
       result: json['result'],
     );
   }
+
+  @override
+  String toString() {
+    return 'Hardware(name: $name, description: $description, result: $result)';
+  }
 }
 
 class Network {
@@ -135,6 +155,11 @@ class Network {
       description: json['description'],
       result: json['result'],
     );
+  }
+
+  @override
+  String toString() {
+    return 'Network(name: $name, description: $description, result: $result)';
   }
 }
 

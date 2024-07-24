@@ -13,4 +13,16 @@ class RoomState {
       name: json['name'],
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+    };
+  }
+
+  @override
+  String toString() {
+    return 'RoomState(id: $id, name: $name)';
+  }
 }
