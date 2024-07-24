@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:auto_route/auto_route.dart';
 
-import 'package:pde_worksheet/routes/app_router.gr.dart';
-import 'package:pde_worksheet/services/auth_service.dart';
+import 'login_controller.dart';
 
 @RoutePage(name: 'LoginRoute')
 class LoginView extends ConsumerStatefulWidget {
@@ -14,44 +13,7 @@ class LoginView extends ConsumerStatefulWidget {
 }
 
 class _LoginViewState extends ConsumerState<LoginView> {
-  final formKey = GlobalKey<FormState>();
-  final usernameController = TextEditingController();
-  final passwordController = TextEditingController();
-  bool isPasswordVisible = false;
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  void _attemptLogin(WidgetRef ref) async {
-    if (formKey.currentState!.validate()) {
-      try {
-        await ref.read(authProvider.notifier).login(
-              usernameController.text,
-              passwordController.text,
-            );
-        final isAuthenticated = ref.read(authProvider).token != null;
-        if (!mounted) return;
-        if (isAuthenticated) {
-          AutoRouter.of(context).replace(const HomeRoute());
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Invalid username or password'),
-            ),
-          );
-        }
-      } catch (e) {
-        // Handle any exceptions that occur during the login attempt
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('An error occurred: $e'),
-          ),
-        );
-      }
-    }
-  }
+  final LoginController _controller = LoginController();
 
   @override
   Widget build(BuildContext context) {
@@ -59,14 +21,14 @@ class _LoginViewState extends ConsumerState<LoginView> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
-          key: formKey,
+          key: _controller.formKey,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Image.asset('assets/images/21888.png', width: 150),
               const SizedBox(height: 20),
               TextFormField(
-                controller: usernameController,
+                controller: _controller.usernameController,
                 decoration: const InputDecoration(
                   labelText: 'Username',
                   border: OutlineInputBorder(),
@@ -80,20 +42,21 @@ class _LoginViewState extends ConsumerState<LoginView> {
               ),
               const SizedBox(height: 10),
               TextFormField(
-                controller: passwordController,
-                obscureText: !isPasswordVisible,
+                controller: _controller.passwordController,
+                obscureText: !_controller.isPasswordVisible,
                 decoration: InputDecoration(
                   labelText: 'Password',
                   border: const OutlineInputBorder(),
                   suffixIcon: IconButton(
                     icon: Icon(
-                      isPasswordVisible
+                      _controller.isPasswordVisible
                           ? Icons.visibility
                           : Icons.visibility_off,
                     ),
                     onPressed: () {
                       setState(() {
-                        isPasswordVisible = !isPasswordVisible;
+                        _controller.isPasswordVisible =
+                            !_controller.isPasswordVisible;
                       });
                     },
                   ),
@@ -107,7 +70,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () => _attemptLogin(ref),
+                onPressed: () => _controller.attemptLogin(context, ref),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
                   foregroundColor: Colors.white,
