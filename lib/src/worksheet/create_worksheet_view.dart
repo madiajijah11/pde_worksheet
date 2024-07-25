@@ -7,7 +7,9 @@ import 'package:dropdown_search/dropdown_search.dart';
 
 import 'package:pde_worksheet/models/room_state.dart';
 import 'package:pde_worksheet/models/worksheet_state.dart';
+import 'package:pde_worksheet/routes/app_router.gr.dart';
 import 'package:pde_worksheet/services/room_service.dart';
+import 'package:pde_worksheet/services/worksheet_service.dart';
 import 'package:pde_worksheet/src/components/input_field_list.dart';
 import 'package:pde_worksheet/store/store.dart';
 import 'package:pde_worksheet/utils/token_utils.dart';
@@ -23,20 +25,17 @@ class CreateWorksheetView extends StatefulWidget {
 class _CreateWorksheetViewState extends State<CreateWorksheetView> {
   final _formKey = GlobalKey<FormState>();
 
-  final TextEditingController _worksheetNumberController =
-      TextEditingController();
-  final TextEditingController _roomController = TextEditingController();
   final TextEditingController _startTimeController = TextEditingController();
   final TextEditingController _endTimeController = TextEditingController();
-
-  String? _selectedRoom;
-  List<RoomState> _rooms = [];
-  Map<String, dynamic> _decodedToken = {};
 
   final List<TextEditingController> _technicianControllers = [];
   final List<Map<String, TextEditingController>> _softwareControllers = [];
   final List<Map<String, TextEditingController>> _hardwareControllers = [];
   final List<Map<String, TextEditingController>> _networkControllers = [];
+
+  String _selectedRoom = '';
+  List<RoomState> _rooms = [];
+  Map<String, dynamic> _decodedToken = {};
 
   @override
   void initState() {
@@ -85,7 +84,7 @@ class _CreateWorksheetViewState extends State<CreateWorksheetView> {
           time.hour,
           time.minute,
         );
-        controller.text = DateFormat('yyyy-MM-dd – kk:mm').format(dateTime);
+        controller.text = DateFormat("yyyy-MM-dd'T'HH:mm:ss").format(dateTime);
       }
     }
   }
@@ -112,22 +111,12 @@ class _CreateWorksheetViewState extends State<CreateWorksheetView> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          TextFormField(
-                            controller: _worksheetNumberController,
-                            decoration: const InputDecoration(
-                                labelText: 'Worksheet Number'),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter worksheet number';
-                              }
-                              return null;
-                            },
-                          ),
                           SizedBox(height: 16.0),
                           TextFormField(
                             controller: _startTimeController,
-                            decoration:
-                                const InputDecoration(labelText: 'Start Time'),
+                            decoration: const InputDecoration(
+                                labelText: 'Start Time',
+                                border: OutlineInputBorder()),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'Please enter start time';
@@ -140,8 +129,9 @@ class _CreateWorksheetViewState extends State<CreateWorksheetView> {
                           SizedBox(height: 16.0),
                           TextFormField(
                             controller: _endTimeController,
-                            decoration:
-                                const InputDecoration(labelText: 'End Time'),
+                            decoration: const InputDecoration(
+                                labelText: 'End Time',
+                                border: OutlineInputBorder()),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'Please enter end time';
@@ -160,13 +150,14 @@ class _CreateWorksheetViewState extends State<CreateWorksheetView> {
                                 .toList(),
                             dropdownDecoratorProps: DropDownDecoratorProps(
                               dropdownSearchDecoration: InputDecoration(
+                                border: OutlineInputBorder(),
                                 labelText: "Select Room",
                                 hintText: "Select a room",
                               ),
                             ),
                             onChanged: (newValue) {
                               setState(() {
-                                _selectedRoom = newValue;
+                                _selectedRoom = newValue!;
                               });
                             },
                             selectedItem: _selectedRoom,
@@ -188,14 +179,13 @@ class _CreateWorksheetViewState extends State<CreateWorksheetView> {
                               controllers: _networkControllers),
                           const SizedBox(height: 20),
                           ElevatedButton(
-                            onPressed: () {
+                            onPressed: () async {
                               if (_formKey.currentState!.validate()) {
-                                // Process data
+                                WorksheetService worksheetService =
+                                    WorksheetService();
                                 NewWorksheetState newWorksheet =
                                     NewWorksheetState(
-                                  worksheetNumber:
-                                      _worksheetNumberController.text,
-                                  room: _roomController.text,
+                                  room: _selectedRoom,
                                   startTime: _startTimeController.text,
                                   endTime: _endTimeController.text,
                                   userId:
@@ -230,11 +220,32 @@ class _CreateWorksheetViewState extends State<CreateWorksheetView> {
                                           ))
                                       .toList(),
                                 );
-                                print(newWorksheet);
-                                // Handle the new worksheet (e.g., send to server or save locally)
+                                var response = await worksheetService
+                                    .newWorksheet(newWorksheet);
+                                // print(response);
+                                if (response != null) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Worksheet created'),
+                                    ),
+                                  );
+                                  await Future.delayed(
+                                      const Duration(seconds: 1));
+                                  AutoRouter.of(context)
+                                      .replace(const HomeRoute());
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content:
+                                          Text('Failed to create worksheet'),
+                                    ),
+                                  );
+                                }
                               }
                             },
                             style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.blue,
+                              foregroundColor: Colors.white,
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 24.0, vertical: 12.0),
                               textStyle: const TextStyle(fontSize: 16.0),

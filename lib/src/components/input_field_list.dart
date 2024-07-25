@@ -36,6 +36,8 @@ class _InputFieldListState extends State<InputFieldList> {
                   });
                 },
                 style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white,
                   padding:
                       EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
                   textStyle: TextStyle(fontSize: 16.0),
@@ -62,7 +64,8 @@ class _InputFieldListState extends State<InputFieldList> {
                               controller: widget.controllers[index]['name'],
                               decoration: InputDecoration(
                                   labelText:
-                                      '${widget.label} Name ${index + 1}'),
+                                      '${widget.label} Name ${index + 1}',
+                                  border: OutlineInputBorder()),
                             ),
                           ),
                           IconButton(
@@ -80,13 +83,15 @@ class _InputFieldListState extends State<InputFieldList> {
                         controller: widget.controllers[index]['description'],
                         decoration: InputDecoration(
                             labelText:
-                                '${widget.label} Description ${index + 1}'),
+                                '${widget.label} Description ${index + 1}',
+                            border: OutlineInputBorder()),
                       ),
                       SizedBox(height: 8.0),
                       TextFormField(
                         controller: widget.controllers[index]['result'],
                         decoration: InputDecoration(
-                            labelText: '${widget.label} Result ${index + 1}'),
+                            labelText: '${widget.label} Result ${index + 1}',
+                            border: OutlineInputBorder()),
                       ),
                     ],
                   ),

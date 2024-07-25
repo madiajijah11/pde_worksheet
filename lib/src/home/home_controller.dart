@@ -16,6 +16,7 @@ class HomeController {
       isLoading.value = true;
       final fetchedWorksheets = await _worksheetService.getWorksheets();
       worksheets = fetchedWorksheets;
+      filterWorksheets();
     } catch (e) {
       // Handle error
       print('Error fetching worksheets: $e');
@@ -30,7 +31,6 @@ class HomeController {
       final token = await _getToken();
       if (token != null) {
         decodedToken = JWT().decodeToken(token);
-        filterWorksheets();
       }
     } catch (e) {
       // Handle error
@@ -53,6 +53,10 @@ class HomeController {
   void filterWorksheets() {
     final userId = decodedToken['id'];
     final userRole = decodedToken['accessRight'];
+    // print(decodedToken);
+
+    // desc order by createdAt
+    worksheets.sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
 
     worksheets = worksheets.where((worksheet) {
       if (userRole == 'SUPERADMIN' || userRole == 'ADMIN') {

@@ -44,8 +44,8 @@ class _HomeViewState extends State<HomeView> {
             itemCount: _controller.worksheets.length,
             itemBuilder: (context, index) {
               final worksheet = _controller.worksheets[index];
-              final startTime = formatDateTime(worksheet.startTime);
-              final endTime = formatDateTime(worksheet.endTime);
+              final startTime = formatDateTime(worksheet.startTime!);
+              final endTime = formatDateTime(worksheet.endTime!);
               return Card(
                 margin: const EdgeInsets.symmetric(vertical: 8.0),
                 elevation: 4.0,
@@ -90,7 +90,7 @@ class _HomeViewState extends State<HomeView> {
                       ...worksheet.softwares.map((software) => ListTile(
                             contentPadding: EdgeInsets.zero,
                             leading: Icon(Icons.computer),
-                            title: Text(software.name),
+                            title: Text(software.name!),
                             subtitle: Text(
                                 '${software.description} - ${software.result}'),
                           )),
@@ -102,7 +102,7 @@ class _HomeViewState extends State<HomeView> {
                       ...worksheet.hardwares.map((hardware) => ListTile(
                             contentPadding: EdgeInsets.zero,
                             leading: Icon(Icons.memory),
-                            title: Text(hardware.name),
+                            title: Text(hardware.name!),
                             subtitle: Text(
                                 '${hardware.description} - ${hardware.result}'),
                           )),
@@ -114,7 +114,7 @@ class _HomeViewState extends State<HomeView> {
                       ...worksheet.networks.map((network) => ListTile(
                             contentPadding: EdgeInsets.zero,
                             leading: Icon(Icons.network_check),
-                            title: Text(network.name),
+                            title: Text(network.name!),
                             subtitle: Text(
                                 '${network.description} - ${network.result}'),
                           )),
@@ -131,8 +131,12 @@ class _HomeViewState extends State<HomeView> {
           // Navigate to the Create Worksheet screen
           AutoRouter.of(context).navigate(const CreateWorksheetRoute());
         },
+        backgroundColor: Colors.blue,
         tooltip: 'Create Worksheet',
-        child: Icon(Icons.add),
+        child: Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
       ),
     );
   }

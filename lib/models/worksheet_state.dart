@@ -1,10 +1,12 @@
 class WorksheetState {
   final int id;
-  final String worksheetNumber;
-  final String room;
-  final String startTime;
-  final String endTime;
-  final int userId;
+  final String? worksheetNumber;
+  final String? room;
+  final String? startTime;
+  final String? endTime;
+  final int? userId;
+  final String? createdAt;
+  final String? updatedAt;
   final List<Technician> technicians;
   final List<Software> softwares;
   final List<Hardware> hardwares;
@@ -17,6 +19,8 @@ class WorksheetState {
     required this.startTime,
     required this.endTime,
     required this.userId,
+    this.createdAt,
+    this.updatedAt,
     required this.technicians,
     required this.softwares,
     required this.hardwares,
@@ -31,6 +35,8 @@ class WorksheetState {
       startTime: json['startTime'],
       endTime: json['endTime'],
       userId: json['userId'],
+      createdAt: json['createdAt'],
+      updatedAt: json['updatedAt'],
       technicians: (json['technicians'] as List)
           .map((tech) => Technician.fromJson(tech))
           .toList(),
@@ -52,14 +58,14 @@ class WorksheetState {
 
   @override
   String toString() {
-    return 'WorksheetState(id: $id, worksheetNumber: $worksheetNumber, room: $room, startTime: $startTime, endTime: $endTime, userId: $userId, technicians: $technicians, softwares: $softwares, hardwares: $hardwares, networks: $networks)';
+    return 'WorksheetState(id: $id, worksheetNumber: $worksheetNumber, room: $room, startTime: $startTime, endTime: $endTime, userId: $userId, createdAt: $createdAt, updatedAt: $updatedAt, technicians: $technicians, softwares: $softwares, hardwares: $hardwares, networks: $networks)';
   }
 }
 
 class Technician {
-  final int id;
+  final int? id;
   final String? titles;
-  final String name;
+  final String? name;
   final String? degrees;
 
   Technician({
@@ -89,9 +95,9 @@ class Technician {
 }
 
 class Software {
-  final String name;
-  final String description;
-  final String result;
+  final String? name;
+  final String? description;
+  final String? result;
 
   Software({
     required this.name,
@@ -114,9 +120,9 @@ class Software {
 }
 
 class Hardware {
-  final String name;
-  final String description;
-  final String result;
+  final String? name;
+  final String? description;
+  final String? result;
 
   Hardware({
     required this.name,
@@ -139,9 +145,9 @@ class Hardware {
 }
 
 class Network {
-  final String name;
-  final String description;
-  final String result;
+  final String? name;
+  final String? description;
+  final String? result;
 
   Network({
     required this.name,
@@ -164,18 +170,16 @@ class Network {
 }
 
 class NewWorksheetState {
-  final String worksheetNumber;
-  final String room;
-  final String startTime;
-  final String endTime;
-  final int userId;
+  final String? room;
+  final String? startTime;
+  final String? endTime;
+  final int? userId;
   final List<TechnicianItem> technicianItems;
   final List<SoftwareItem> softwareItems;
   final List<HardwareItem> hardwareItems;
   final List<NetworkItem> networkItems;
 
   NewWorksheetState({
-    required this.worksheetNumber,
     required this.room,
     required this.startTime,
     required this.endTime,
@@ -188,29 +192,35 @@ class NewWorksheetState {
 
   factory NewWorksheetState.fromJson(Map<String, dynamic> json) {
     return NewWorksheetState(
-      worksheetNumber: json['worksheetNumber'],
       room: json['room'],
       startTime: json['startTime'],
       endTime: json['endTime'],
       userId: json['userId'],
-      technicianItems: (json['technicianItems'] as List)
-          .map((item) => TechnicianItem.fromJson(item))
-          .toList(),
-      softwareItems: (json['softwareItems'] as List)
-          .map((item) => SoftwareItem.fromJson(item))
-          .toList(),
-      hardwareItems: (json['hardwareItems'] as List)
-          .map((item) => HardwareItem.fromJson(item))
-          .toList(),
-      networkItems: (json['networkItems'] as List)
-          .map((item) => NetworkItem.fromJson(item))
-          .toList(),
+      technicianItems: (json['technicianItems'] as List?)
+              ?.map((item) => TechnicianItem.fromJson(item))
+              .toList() ??
+          [],
+      softwareItems: (json['softwareItems'] as List?)
+              ?.map((item) => SoftwareItem.fromJson(item))
+              .toList() ??
+          [],
+      hardwareItems: (json['hardwareItems'] as List?)
+              ?.map((item) => HardwareItem.fromJson(item))
+              .toList() ??
+          [],
+      networkItems: (json['networkItems'] as List?)
+              ?.map((item) => NetworkItem.fromJson(item))
+              .toList() ??
+          [],
     );
+  }
+
+  static List<NewWorksheetState> fromJsonList(List<dynamic> jsonList) {
+    return jsonList.map((json) => NewWorksheetState.fromJson(json)).toList();
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'worksheetNumber': worksheetNumber,
       'room': room,
       'startTime': startTime,
       'endTime': endTime,
@@ -224,12 +234,12 @@ class NewWorksheetState {
 
   @override
   String toString() {
-    return 'NewWorksheetState(worksheetNumber: $worksheetNumber, room: $room, startTime: $startTime, endTime: $endTime, userId: $userId, technicianItems: $technicianItems, softwareItems: $softwareItems, hardwareItems: $hardwareItems, networkItems: $networkItems)';
+    return 'NewWorksheetState(room: $room, startTime: $startTime, endTime: $endTime, userId: $userId, technicianItems: $technicianItems, softwareItems: $softwareItems, hardwareItems: $hardwareItems, networkItems: $networkItems)';
   }
 }
 
 class TechnicianItem {
-  final String id;
+  final String? id;
 
   TechnicianItem({required this.id});
 
@@ -248,9 +258,9 @@ class TechnicianItem {
 }
 
 class SoftwareItem {
-  final String name;
-  final String description;
-  final String result;
+  final String? name;
+  final String? description;
+  final String? result;
 
   SoftwareItem(
       {required this.name, required this.description, required this.result});
@@ -278,9 +288,9 @@ class SoftwareItem {
 }
 
 class HardwareItem {
-  final String name;
-  final String description;
-  final String result;
+  final String? name;
+  final String? description;
+  final String? result;
 
   HardwareItem(
       {required this.name, required this.description, required this.result});
@@ -308,9 +318,9 @@ class HardwareItem {
 }
 
 class NetworkItem {
-  final String name;
-  final String description;
-  final String result;
+  final String? name;
+  final String? description;
+  final String? result;
 
   NetworkItem(
       {required this.name, required this.description, required this.result});
@@ -334,5 +344,48 @@ class NetworkItem {
   @override
   String toString() {
     return 'NetworkItem(name: $name, description: $description, result: $result)';
+  }
+}
+
+class SingleWorksheetState {
+  final WorksheetState worksheet;
+  final List<Technician> technicians;
+  final List<SoftwareItem> softwares;
+  final List<HardwareItem> hardwares;
+  final List<NetworkItem> networks;
+
+  SingleWorksheetState({
+    required this.worksheet,
+    required this.technicians,
+    required this.softwares,
+    required this.hardwares,
+    required this.networks,
+  });
+
+  factory SingleWorksheetState.fromJson(Map<String, dynamic> json) {
+    return SingleWorksheetState(
+      worksheet: WorksheetState.fromJson(json['worksheet']),
+      technicians: (json['technicians'] as List?)
+              ?.map((item) => Technician.fromJson(item))
+              .toList() ??
+          [],
+      softwares: (json['softwares'] as List?)
+              ?.map((item) => SoftwareItem.fromJson(item))
+              .toList() ??
+          [],
+      hardwares: (json['hardwares'] as List?)
+              ?.map((item) => HardwareItem.fromJson(item))
+              .toList() ??
+          [],
+      networks: (json['networks'] as List?)
+              ?.map((item) => NetworkItem.fromJson(item))
+              .toList() ??
+          [],
+    );
+  }
+
+  @override
+  String toString() {
+    return 'SingleWorksheetState(worksheet: $worksheet, technicians: $technicians, softwares: $softwares, hardwares: $hardwares, networks: $networks)';
   }
 }

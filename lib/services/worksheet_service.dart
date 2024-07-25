@@ -32,4 +32,33 @@ class WorksheetService {
     }
     return worksheets;
   }
+
+  Future<NewWorksheetState?> newWorksheet(NewWorksheetState worksheet) async {
+    String? token = await SecureStorage.read('token');
+    final baseUrl = dotenv.env['API'] ?? '';
+    NewWorksheetState? newWorksheet;
+
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/api/worksheets'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: json.encode(worksheet.toJson()),
+      );
+
+      if (response.statusCode == 201) {
+        final data = json.decode(response.body);
+        newWorksheet = NewWorksheetState.fromJson(data);
+      } else {
+        // Handle non-201 status codes
+        print('Failed to create new worksheet: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any exceptions that occur during the HTTP request
+      print('An error occurred during create new worksheet: $e');
+    }
+    return newWorksheet;
+  }
 }
