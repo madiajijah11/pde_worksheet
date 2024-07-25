@@ -32,6 +32,15 @@ class _HomeViewState extends State<HomeView> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home'),
+        actions: [
+          ElevatedButton.icon(
+            icon: const Icon(Icons.person),
+            label: const Text("Profile"),
+            onPressed: () {
+              AutoRouter.of(context).navigate(const ProfileRoute());
+            },
+          ),
+        ],
       ),
       body: ValueListenableBuilder<bool>(
         valueListenable: _controller.isLoading,

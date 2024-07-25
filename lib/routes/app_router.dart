@@ -10,5 +10,6 @@ class AppRouter extends $AppRouter {
         AutoRoute(page: LoginRoute.page),
         AutoRoute(page: HomeRoute.page, initial: true, guards: [AuthGuard()]),
         AutoRoute(page: CreateWorksheetRoute.page, guards: [AuthGuard()]),
+        AutoRoute(page: ProfileRoute.page, guards: [AuthGuard()]),
       ];
 }
