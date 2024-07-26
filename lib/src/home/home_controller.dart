@@ -66,4 +66,38 @@ class HomeController {
       }
     }).toList();
   }
+
+  void showEditDeleteDialog(
+      BuildContext context, String role, Function onEdit, Function onDelete) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Edit or Delete Item'),
+          content: Text('Choose an action'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                onEdit();
+              },
+              child: Text('Edit'),
+            ),
+            if (role == 'SUPERADMIN' || role == 'ADMIN')
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  onDelete();
+                },
+                child: Text('Delete'),
+              ),
+          ],
+        );
+      },
+    );
+  }
+
+  void dispose() {
+    isLoading.dispose();
+  }
 }

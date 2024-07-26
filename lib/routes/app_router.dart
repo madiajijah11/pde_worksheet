@@ -9,7 +9,7 @@ class AppRouter extends $AppRouter {
   List<AutoRoute> get routes => [
         AutoRoute(page: LoginRoute.page),
         AutoRoute(page: HomeRoute.page, initial: true, guards: [AuthGuard()]),
-        AutoRoute(page: CreateWorksheetRoute.page, guards: [AuthGuard()]),
+        AutoRoute(page: WorksheetRoute.page, guards: [AuthGuard()]),
         AutoRoute(page: ProfileRoute.page, guards: [AuthGuard()]),
       ];
 }

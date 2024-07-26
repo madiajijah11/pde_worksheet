@@ -6,23 +6,26 @@ import 'package:intl/intl.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 
 import 'package:pde_worksheet/models/room_state.dart';
+import 'package:pde_worksheet/models/technician_state.dart';
 import 'package:pde_worksheet/models/worksheet_state.dart';
 import 'package:pde_worksheet/routes/app_router.gr.dart';
 import 'package:pde_worksheet/services/room_service.dart';
+import 'package:pde_worksheet/services/technician_service.dart';
 import 'package:pde_worksheet/services/worksheet_service.dart';
 import 'package:pde_worksheet/src/components/input_field_list.dart';
 import 'package:pde_worksheet/store/store.dart';
 import 'package:pde_worksheet/utils/token_utils.dart';
 
-@RoutePage(name: 'CreateWorksheetRoute')
-class CreateWorksheetView extends StatefulWidget {
-  const CreateWorksheetView({super.key});
+@RoutePage(name: 'WorksheetRoute')
+class WorksheetView extends StatefulWidget {
+  final int? itemId;
+  const WorksheetView({super.key, this.itemId});
 
   @override
-  State<CreateWorksheetView> createState() => _CreateWorksheetViewState();
+  State<WorksheetView> createState() => _WorksheetViewState();
 }
 
-class _CreateWorksheetViewState extends State<CreateWorksheetView> {
+class _WorksheetViewState extends State<WorksheetView> {
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController _startTimeController = TextEditingController();
@@ -34,15 +37,28 @@ class _CreateWorksheetViewState extends State<CreateWorksheetView> {
   final List<Map<String, TextEditingController>> _networkControllers = [];
 
   String _selectedRoom = '';
+  String _selectedTechnician = '';
   List<RoomState> _rooms = [];
+  List<TechnicianState> _technicians = [];
   Map<String, dynamic> _decodedToken = {};
 
   @override
   void initState() {
     super.initState();
+    if (widget.itemId != null) {
+      // Edit operation
+      _loadWorksheetData(widget.itemId!);
+    }
     _getToken();
     decodeToken();
     fetchRoom();
+    fetchTechnician();
+  }
+
+  Future<void> _loadWorksheetData(int id) async {
+    print(id);
+    final worksheet = await WorksheetService().getWorksheet(id);
+    setState(() {});
   }
 
   Future<void> decodeToken() async {
@@ -60,6 +76,13 @@ class _CreateWorksheetViewState extends State<CreateWorksheetView> {
     final fetchedRooms = await RoomService().getRooms();
     setState(() {
       _rooms = fetchedRooms;
+    });
+  }
+
+  Future<void> fetchTechnician() async {
+    final fetchedTechnicians = await TechnicianService().getTechnicians();
+    setState(() {
+      _technicians = fetchedTechnicians;
     });
   }
 
@@ -93,7 +116,8 @@ class _CreateWorksheetViewState extends State<CreateWorksheetView> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Create Worksheet'),
+          title: Text(
+              widget.itemId != null ? 'Edit Worksheet' : 'Create Worksheet'),
         ),
         body: Padding(
             padding: const EdgeInsets.all(8.0),
@@ -168,6 +192,44 @@ class _CreateWorksheetViewState extends State<CreateWorksheetView> {
                               return null;
                             },
                           ),
+                          SizedBox(height: 16.0),
+                          DropdownSearch<String>(
+                            popupProps: PopupProps.menu(
+                                showSelectedItems: true, showSearchBox: true),
+                            items: _technicians
+                                .map((TechnicianState tech) => tech.name)
+                                .toList(),
+                            dropdownDecoratorProps: DropDownDecoratorProps(
+                              dropdownSearchDecoration: InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: "Select Technician",
+                                hintText: "Select a technician",
+                              ),
+                            ),
+                            onChanged: (newValue) {
+                              setState(() {
+                                _selectedTechnician = newValue!;
+                              });
+                            },
+                            selectedItem: _selectedTechnician,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please select a technician';
+                              }
+                              return null;
+                            },
+                          ),
+                          SizedBox(height: 16.0),
+                          ListView(
+                            shrinkWrap: true,
+                            children: _technicianControllers
+                                .map((controller) => ListTile(
+                                      contentPadding: EdgeInsets.zero,
+                                      leading: const Icon(Icons.person),
+                                      title: Text(controller.text),
+                                    ))
+                                .toList(),
+                          ),
                           InputFieldList(
                               label: 'Software',
                               controllers: _softwareControllers),
@@ -181,65 +243,12 @@ class _CreateWorksheetViewState extends State<CreateWorksheetView> {
                           ElevatedButton(
                             onPressed: () async {
                               if (_formKey.currentState!.validate()) {
-                                WorksheetService worksheetService =
-                                    WorksheetService();
-                                NewWorksheetState newWorksheet =
-                                    NewWorksheetState(
-                                  room: _selectedRoom,
-                                  startTime: _startTimeController.text,
-                                  endTime: _endTimeController.text,
-                                  userId:
-                                      int.parse(_decodedToken['id'].toString()),
-                                  technicianItems: _technicianControllers
-                                      .map((controller) => TechnicianItem(
-                                            id: controller.text,
-                                          ))
-                                      .toList(),
-                                  softwareItems: _softwareControllers
-                                      .map((controller) => SoftwareItem(
-                                            name: controller['name']!.text,
-                                            description:
-                                                controller['description']!.text,
-                                            result: controller['result']!.text,
-                                          ))
-                                      .toList(),
-                                  hardwareItems: _hardwareControllers
-                                      .map((controller) => HardwareItem(
-                                            name: controller['name']!.text,
-                                            description:
-                                                controller['description']!.text,
-                                            result: controller['result']!.text,
-                                          ))
-                                      .toList(),
-                                  networkItems: _networkControllers
-                                      .map((controller) => NetworkItem(
-                                            name: controller['name']!.text,
-                                            description:
-                                                controller['description']!.text,
-                                            result: controller['result']!.text,
-                                          ))
-                                      .toList(),
-                                );
-                                var response = await worksheetService
-                                    .newWorksheet(newWorksheet);
-                                // print(response);
-                                if (response != null) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('Worksheet created'),
-                                    ),
-                                  );
-                                  await Future.delayed(
-                                      const Duration(seconds: 1));
-                                  AutoRouter.of(context)
-                                      .replace(const HomeRoute());
+                                if (widget.itemId != null) {
+                                  // Update existing worksheet
+                                  // _updateWorksheet(widget.itemId!);
                                 } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content:
-                                          Text('Failed to create worksheet'),
-                                    ),
-                                  );
+                                  // Create new worksheet
+                                  // _createWorksheet();
                                 }
                               }
                             },
@@ -259,3 +268,109 @@ class _CreateWorksheetViewState extends State<CreateWorksheetView> {
                 ]))));
   }
 }
+
+// Future<void> _createWorksheet() async {
+//   WorksheetService worksheetService = WorksheetService();
+//   NewWorksheetState newWorksheet = NewWorksheetState(
+//     room: _selectedRoom,
+//     startTime: _startTimeController.text,
+//     endTime: _endTimeController.text,
+//     userId: int.parse(_decodedToken['id'].toString()),
+//     technicianItems: _technicianControllers
+//         .map((controller) => TechnicianItem(
+//               id: controller.text,
+//             ))
+//         .toList(),
+//     softwareItems: _softwareControllers
+//         .map((controller) => SoftwareItem(
+//               name: controller['name']!.text,
+//               description: controller['description']!.text,
+//               result: controller['result']!.text,
+//             ))
+//         .toList(),
+//     hardwareItems: _hardwareControllers
+//         .map((controller) => HardwareItem(
+//               name: controller['name']!.text,
+//               description: controller['description']!.text,
+//               result: controller['result']!.text,
+//             ))
+//         .toList(),
+//     networkItems: _networkControllers
+//         .map((controller) => NetworkItem(
+//               name: controller['name']!.text,
+//               description: controller['description']!.text,
+//               result: controller['result']!.text,
+//             ))
+//         .toList(),
+//   );
+//   var response = await worksheetService.newWorksheet(newWorksheet);
+//   // print(response);
+//   if (response != null) {
+//     ScaffoldMessenger.of(context).showSnackBar(
+//       const SnackBar(
+//         content: Text('Worksheet created'),
+//       ),
+//     );
+//     await Future.delayed(const Duration(seconds: 1));
+//     AutoRouter.of(context).replace(const HomeRoute());
+//   } else {
+//     ScaffoldMessenger.of(context).showSnackBar(
+//       const SnackBar(
+//         content: Text('Failed to create worksheet'),
+//       ),
+//     );
+//   }
+// }
+
+// Future<void> _updateWorksheet(int index) async {
+//   WorksheetService worksheetService = WorksheetService();
+//   NewWorksheetState newWorksheet = NewWorksheetState(
+//     room: _selectedRoom,
+//     startTime: _startTimeController.text,
+//     endTime: _endTimeController.text,
+//     userId: int.parse(_decodedToken['id'].toString()),
+//     technicianItems: _technicianControllers
+//         .map((controller) => TechnicianItem(
+//               id: controller.text,
+//             ))
+//         .toList(),
+//     softwareItems: _softwareControllers
+//         .map((controller) => SoftwareItem(
+//               name: controller['name']!.text,
+//               description: controller['description']!.text,
+//               result: controller['result']!.text,
+//             ))
+//         .toList(),
+//     hardwareItems: _hardwareControllers
+//         .map((controller) => HardwareItem(
+//               name: controller['name']!.text,
+//               description: controller['description']!.text,
+//               result: controller['result']!.text,
+//             ))
+//         .toList(),
+//     networkItems: _networkControllers
+//         .map((controller) => NetworkItem(
+//               name: controller['name']!.text,
+//               description: controller['description']!.text,
+//               result: controller['result']!.text,
+//             ))
+//         .toList(),
+//   );
+//   var response = await worksheetService.updateWorksheet(index, newWorksheet);
+//   // print(response);
+//   if (response != null) {
+//     ScaffoldMessenger.of(context).showSnackBar(
+//       const SnackBar(
+//         content: Text('Worksheet updated'),
+//       ),
+//     );
+//     await Future.delayed(const Duration(seconds: 1));
+//     AutoRouter.of(context).replace(const HomeRoute());
+//   } else {
+//     ScaffoldMessenger.of(context).showSnackBar(
+//       const SnackBar(
+//         content: Text('Failed to update worksheet'),
+//       ),
+//     );
+//   }
+// }
