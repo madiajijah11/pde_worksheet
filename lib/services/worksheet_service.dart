@@ -62,10 +62,10 @@ class WorksheetService {
     return newWorksheet;
   }
 
-  Future<SingleWorksheetState> getWorksheet(int id) async {
+  Future<GetSingleWorksheetState?> getWorksheet(int id) async {
     String? token = await SecureStorage.read('token');
     final baseUrl = dotenv.env['API'] ?? '';
-    SingleWorksheetState worksheets = {} as SingleWorksheetState;
+    GetSingleWorksheetState? worksheet;
     try {
       final response = await http.get(
         Uri.parse('$baseUrl/api/worksheets/$id'),
@@ -77,7 +77,7 @@ class WorksheetService {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        worksheets = SingleWorksheetState.fromJson(data['results']);
+        worksheet = GetSingleWorksheetState.fromJson(data['results']);
       } else {
         // Handle non-200 status codes
         print('Failed to get worksheets: ${response.statusCode}');
@@ -86,6 +86,6 @@ class WorksheetService {
       // Handle any exceptions that occur during the HTTP request
       print('An error occurred during get worksheets: $e');
     }
-    return worksheets;
+    return worksheet;
   }
 }

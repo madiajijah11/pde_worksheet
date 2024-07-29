@@ -84,6 +84,15 @@ class Technician {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'titles': titles,
+      'name': name,
+      'degrees': degrees,
+    };
+  }
+
   String get fullName {
     return '${titles ?? ''} $name ${degrees ?? ''}'.trim();
   }
@@ -384,8 +393,91 @@ class SingleWorksheetState {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'worksheet': worksheet.toString(),
+      'technicians': technicians.map((tech) => tech.toJson()).toList(),
+      'softwares': softwares.map((software) => software.toJson()).toList(),
+      'hardwares': hardwares.map((hardware) => hardware.toJson()).toList(),
+      'networks': networks.map((network) => network.toJson()).toList(),
+    };
+  }
+
   @override
   String toString() {
     return 'SingleWorksheetState(worksheet: $worksheet, technicians: $technicians, softwares: $softwares, hardwares: $hardwares, networks: $networks)';
+  }
+}
+
+class GetSingleWorksheetState {
+  final int id;
+  final String worksheetNumber;
+  final String room;
+  final String startTime;
+  final String endTime;
+  final int userId;
+  final String createdAt;
+  final String updatedAt;
+  final List<TechnicianItem> technicians;
+  final List<SoftwareItem> softwares;
+  final List<HardwareItem> hardwares;
+  final List<NetworkItem> networks;
+
+  GetSingleWorksheetState({
+    required this.id,
+    required this.worksheetNumber,
+    required this.room,
+    required this.startTime,
+    required this.endTime,
+    required this.userId,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.technicians,
+    required this.softwares,
+    required this.hardwares,
+    required this.networks,
+  });
+
+  factory GetSingleWorksheetState.fromJson(Map<String, dynamic> json) {
+    return GetSingleWorksheetState(
+      id: json['id'] ?? 0,
+      worksheetNumber: json['worksheetNumber'] ?? '',
+      room: json['room'] ?? '',
+      startTime: json['startTime'] ?? '',
+      endTime: json['endTime'] ?? '',
+      userId: json['userId'] ?? 0,
+      createdAt: json['createdAt'] ?? '',
+      updatedAt: json['updatedAt'] ?? '',
+      technicians: (json['technicians'] as List?)
+              ?.map(
+                  (tech) => tech != null ? TechnicianItem.fromJson(tech) : null)
+              .where((item) => item != null)
+              .cast<TechnicianItem>()
+              .toList() ??
+          [],
+      softwares: (json['softwares'] as List?)
+              ?.map((item) => item != null ? SoftwareItem.fromJson(item) : null)
+              .where((item) => item != null)
+              .cast<SoftwareItem>()
+              .toList() ??
+          [],
+      hardwares: (json['hardwares'] as List?)
+              ?.map((item) => item != null ? HardwareItem.fromJson(item) : null)
+              .where((item) => item != null)
+              .cast<HardwareItem>()
+              .toList() ??
+          [],
+      networks: (json['networks'] as List?)
+              ?.map((item) => item != null ? NetworkItem.fromJson(item) : null)
+              .where((item) => item != null)
+              .cast<NetworkItem>()
+              .toList() ??
+          [],
+    );
+  }
+
+  @override
+  String toString() {
+    return 'GetSingleWorksheetState(id: $id, worksheetNumber: $worksheetNumber, room: $room, startTime: $startTime, endTime: $endTime, userId: $userId, createdAt: $createdAt, updatedAt: $updatedAt, technicians: $technicians, softwares: $softwares, hardwares: $hardwares, networks: $networks)';
   }
 }
