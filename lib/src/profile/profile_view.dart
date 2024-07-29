@@ -55,6 +55,7 @@ class _ProfileViewState extends State<ProfileView> {
               SizedBox(height: 16),
               Text(
                 '$fullName',
+                textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               Text(

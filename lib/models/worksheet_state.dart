@@ -239,7 +239,7 @@ class NewWorksheetState {
 }
 
 class TechnicianItem {
-  final String? id;
+  final int? id;
 
   TechnicianItem({required this.id});
 

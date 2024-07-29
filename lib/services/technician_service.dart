@@ -21,7 +21,7 @@ class TechnicianService {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        technicians = (data['result'] as List)
+        technicians = (data['results'] as List)
             .map((tech) => TechnicianState.fromJson(tech))
             .toList();
       } else {

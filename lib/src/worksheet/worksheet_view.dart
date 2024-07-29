@@ -31,7 +31,8 @@ class _WorksheetViewState extends State<WorksheetView> {
   final TextEditingController _startTimeController = TextEditingController();
   final TextEditingController _endTimeController = TextEditingController();
 
-  final List<TextEditingController> _technicianControllers = [];
+  final TextEditingController _newTechnicianController =
+      TextEditingController();
   final List<Map<String, TextEditingController>> _softwareControllers = [];
   final List<Map<String, TextEditingController>> _hardwareControllers = [];
   final List<Map<String, TextEditingController>> _networkControllers = [];
@@ -40,6 +41,7 @@ class _WorksheetViewState extends State<WorksheetView> {
   String _selectedTechnician = '';
   List<RoomState> _rooms = [];
   List<TechnicianState> _technicians = [];
+  List<TechnicianState> _addedTechnicians = [];
   Map<String, dynamic> _decodedToken = {};
 
   @override
@@ -109,6 +111,58 @@ class _WorksheetViewState extends State<WorksheetView> {
         );
         controller.text = DateFormat("yyyy-MM-dd'T'HH:mm:ss").format(dateTime);
       }
+    }
+  }
+
+  Future<void> _createWorksheet() async {
+    WorksheetService worksheetService = WorksheetService();
+    NewWorksheetState newWorksheet = NewWorksheetState(
+      room: _selectedRoom,
+      startTime: _startTimeController.text,
+      endTime: _endTimeController.text,
+      userId: int.parse(_decodedToken['id'].toString()),
+      technicianItems: _addedTechnicians
+          .map((controller) => TechnicianItem(
+                id: controller.id,
+              ))
+          .toList(),
+      softwareItems: _softwareControllers
+          .map((controller) => SoftwareItem(
+                name: controller['name']!.text,
+                description: controller['description']!.text,
+                result: controller['result']!.text,
+              ))
+          .toList(),
+      hardwareItems: _hardwareControllers
+          .map((controller) => HardwareItem(
+                name: controller['name']!.text,
+                description: controller['description']!.text,
+                result: controller['result']!.text,
+              ))
+          .toList(),
+      networkItems: _networkControllers
+          .map((controller) => NetworkItem(
+                name: controller['name']!.text,
+                description: controller['description']!.text,
+                result: controller['result']!.text,
+              ))
+          .toList(),
+    );
+    var response = await worksheetService.newWorksheet(newWorksheet);
+    if (response != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Worksheet created'),
+        ),
+      );
+      await Future.delayed(const Duration(seconds: 1));
+      AutoRouter.of(context).replace(const HomeRoute());
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to create worksheet'),
+        ),
+      );
     }
   }
 
@@ -193,52 +247,96 @@ class _WorksheetViewState extends State<WorksheetView> {
                             },
                           ),
                           SizedBox(height: 16.0),
-                          DropdownSearch<String>(
-                            popupProps: PopupProps.menu(
-                                showSelectedItems: true, showSearchBox: true),
-                            items: _technicians
-                                .map((TechnicianState tech) => tech.name)
-                                .toList(),
-                            dropdownDecoratorProps: DropDownDecoratorProps(
-                              dropdownSearchDecoration: InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: "Select Technician",
-                                hintText: "Select a technician",
+                          Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: DropdownSearch<String>(
+                                      popupProps: PopupProps.menu(
+                                          showSelectedItems: true,
+                                          showSearchBox: true),
+                                      items: _technicians
+                                          .map((TechnicianState tech) =>
+                                              tech.fullName)
+                                          .toList(),
+                                      dropdownDecoratorProps:
+                                          DropDownDecoratorProps(
+                                        dropdownSearchDecoration:
+                                            InputDecoration(
+                                          border: OutlineInputBorder(),
+                                          labelText: "Select Technician",
+                                          hintText: "Select a technician",
+                                        ),
+                                      ),
+                                      onChanged: (newValue) {
+                                        setState(() {
+                                          _selectedTechnician = newValue!;
+                                        });
+                                      },
+                                      selectedItem: _selectedTechnician,
+                                      validator: (value) {
+                                        if (value == null || value.isEmpty) {
+                                          return 'Please select a technician';
+                                        }
+                                        return null;
+                                      },
+                                    ),
+                                  ),
+                                  SizedBox(width: 8),
+                                  IconButton(
+                                    icon: Icon(Icons.add_circle),
+                                    color: Colors.green,
+                                    onPressed: () {
+                                      setState(() {
+                                        _technicians
+                                            .where((item) =>
+                                                item.fullName ==
+                                                _selectedTechnician)
+                                            .forEach((item) {
+                                          _addedTechnicians.add(item);
+                                        });
+                                      });
+                                    },
+                                  ),
+                                ],
                               ),
-                            ),
-                            onChanged: (newValue) {
-                              setState(() {
-                                _selectedTechnician = newValue!;
-                              });
-                            },
-                            selectedItem: _selectedTechnician,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please select a technician';
-                              }
-                              return null;
-                            },
+                              SizedBox(height: 16.0),
+                              ListView(
+                                shrinkWrap: true,
+                                children: _addedTechnicians
+                                    .map((controller) => ListTile(
+                                          contentPadding: EdgeInsets.zero,
+                                          leading: const Icon(Icons.person),
+                                          title: Text(controller.fullName),
+                                          trailing: IconButton(
+                                            icon: Icon(Icons.remove_circle),
+                                            color: Colors.red,
+                                            onPressed: () {
+                                              setState(() {
+                                                _addedTechnicians
+                                                    .remove(controller);
+                                              });
+                                            },
+                                          ),
+                                        ))
+                                    .toList(),
+                              ),
+                            ],
                           ),
-                          SizedBox(height: 16.0),
-                          ListView(
-                            shrinkWrap: true,
-                            children: _technicianControllers
-                                .map((controller) => ListTile(
-                                      contentPadding: EdgeInsets.zero,
-                                      leading: const Icon(Icons.person),
-                                      title: Text(controller.text),
-                                    ))
-                                .toList(),
-                          ),
+                          Divider(),
                           InputFieldList(
                               label: 'Software',
                               controllers: _softwareControllers),
+                          Divider(),
                           InputFieldList(
                               label: 'Hardware',
                               controllers: _hardwareControllers),
+                          Divider(),
                           InputFieldList(
                               label: 'Network',
                               controllers: _networkControllers),
+                          Divider(),
                           const SizedBox(height: 20),
                           ElevatedButton(
                             onPressed: () async {
@@ -248,12 +346,12 @@ class _WorksheetViewState extends State<WorksheetView> {
                                   // _updateWorksheet(widget.itemId!);
                                 } else {
                                   // Create new worksheet
-                                  // _createWorksheet();
+                                  _createWorksheet();
                                 }
                               }
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blue,
+                              backgroundColor: Colors.green,
                               foregroundColor: Colors.white,
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 24.0, vertical: 12.0),
@@ -268,59 +366,6 @@ class _WorksheetViewState extends State<WorksheetView> {
                 ]))));
   }
 }
-
-// Future<void> _createWorksheet() async {
-//   WorksheetService worksheetService = WorksheetService();
-//   NewWorksheetState newWorksheet = NewWorksheetState(
-//     room: _selectedRoom,
-//     startTime: _startTimeController.text,
-//     endTime: _endTimeController.text,
-//     userId: int.parse(_decodedToken['id'].toString()),
-//     technicianItems: _technicianControllers
-//         .map((controller) => TechnicianItem(
-//               id: controller.text,
-//             ))
-//         .toList(),
-//     softwareItems: _softwareControllers
-//         .map((controller) => SoftwareItem(
-//               name: controller['name']!.text,
-//               description: controller['description']!.text,
-//               result: controller['result']!.text,
-//             ))
-//         .toList(),
-//     hardwareItems: _hardwareControllers
-//         .map((controller) => HardwareItem(
-//               name: controller['name']!.text,
-//               description: controller['description']!.text,
-//               result: controller['result']!.text,
-//             ))
-//         .toList(),
-//     networkItems: _networkControllers
-//         .map((controller) => NetworkItem(
-//               name: controller['name']!.text,
-//               description: controller['description']!.text,
-//               result: controller['result']!.text,
-//             ))
-//         .toList(),
-//   );
-//   var response = await worksheetService.newWorksheet(newWorksheet);
-//   // print(response);
-//   if (response != null) {
-//     ScaffoldMessenger.of(context).showSnackBar(
-//       const SnackBar(
-//         content: Text('Worksheet created'),
-//       ),
-//     );
-//     await Future.delayed(const Duration(seconds: 1));
-//     AutoRouter.of(context).replace(const HomeRoute());
-//   } else {
-//     ScaffoldMessenger.of(context).showSnackBar(
-//       const SnackBar(
-//         content: Text('Failed to create worksheet'),
-//       ),
-//     );
-//   }
-// }
 
 // Future<void> _updateWorksheet(int index) async {
 //   WorksheetService worksheetService = WorksheetService();
