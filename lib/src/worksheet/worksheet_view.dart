@@ -26,7 +26,7 @@ class _WorksheetViewState extends State<WorksheetView> {
     super.initState();
     _controller = WorksheetController();
 
-    _controller.getToken().then((_) {
+    _controller.decodeToken().then((_) {
       setState(() {});
     });
     _controller.fetchRoom().then((_) {
@@ -151,12 +151,6 @@ class _WorksheetViewState extends State<WorksheetView> {
                                       },
                                       selectedItem:
                                           _controller.selectedTechnician,
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return 'Please select a technician';
-                                        }
-                                        return null;
-                                      },
                                     ),
                                   ),
                                   SizedBox(width: 8),
@@ -219,12 +213,39 @@ class _WorksheetViewState extends State<WorksheetView> {
                             onPressed: () async {
                               if (_controller.formKey.currentState!
                                   .validate()) {
-                                if (widget.itemId != null) {
-                                  // Update existing worksheet
-                                  // updateWorksheet(widget.itemId!);
-                                } else {
-                                  // Create new worksheet
-                                  _controller.createWorksheet(context);
+                                bool? confirm = await showDialog<bool>(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text('Confirm Submission'),
+                                      content: Text(
+                                          'Are you sure you want to submit?'),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop(false);
+                                          },
+                                          child: Text('Cancel'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop(true);
+                                          },
+                                          child: Text('Submit'),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                                if (confirm == true) {
+                                  if (widget.itemId != null) {
+                                    // Update existing worksheet
+                                    _controller.updateWorksheet(
+                                        context, widget.itemId!);
+                                  } else {
+                                    // Create new worksheet
+                                    _controller.createWorksheet(context);
+                                  }
                                 }
                               }
                             },
@@ -236,7 +257,7 @@ class _WorksheetViewState extends State<WorksheetView> {
                               textStyle: const TextStyle(fontSize: 16.0),
                             ),
                             child: const Text('Submit'),
-                          ),
+                          )
                         ],
                       ),
                     ),

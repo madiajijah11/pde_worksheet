@@ -50,7 +50,7 @@ class WorksheetService {
 
       if (response.statusCode == 201) {
         final data = json.decode(response.body);
-        newWorksheet = NewWorksheetState.fromJson(data);
+        newWorksheet = NewWorksheetState.fromJson(data['results']);
       } else {
         // Handle non-201 status codes
         print('Failed to create new worksheet: ${response.statusCode}');
@@ -87,5 +87,33 @@ class WorksheetService {
       print('An error occurred during get worksheets: $e');
     }
     return worksheet;
+  }
+
+  Future<NewWorksheetState?> updateWorksheet(
+      int id, NewWorksheetState worksheet) async {
+    String? token = await SecureStorage.read('token');
+    final baseUrl = dotenv.env['API'] ?? '';
+    NewWorksheetState? updatedWorksheet;
+    try {
+      final response = await http.patch(
+        Uri.parse('$baseUrl/api/worksheets/$id'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: json.encode(worksheet.toJson()),
+      );
+      if (response.statusCode == 201) {
+        final data = json.decode(response.body);
+        updatedWorksheet = NewWorksheetState.fromJson(data['results']);
+      } else {
+        // Handle non-201 status codes
+        print('Failed to update worksheet: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Handle any exceptions that occur during the HTTP request
+      print('An error occurred during update worksheet: $e');
+    }
+    return updatedWorksheet;
   }
 }

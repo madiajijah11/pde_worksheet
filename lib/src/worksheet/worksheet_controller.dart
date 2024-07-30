@@ -54,28 +54,25 @@ class WorksheetController extends ChangeNotifier {
 
       softwareControllers = worksheet.softwares
           .map((item) => {
-                'name': TextEditingController(text: item.name ?? ''),
-                'description':
-                    TextEditingController(text: item.description ?? ''),
-                'result': TextEditingController(text: item.result ?? ''),
+                'name': TextEditingController(text: item.name),
+                'description': TextEditingController(text: item.description),
+                'result': TextEditingController(text: item.result),
               })
           .toList();
 
       hardwareControllers = worksheet.hardwares
           .map((item) => {
-                'name': TextEditingController(text: item.name ?? ''),
-                'description':
-                    TextEditingController(text: item.description ?? ''),
-                'result': TextEditingController(text: item.result ?? ''),
+                'name': TextEditingController(text: item.name),
+                'description': TextEditingController(text: item.description),
+                'result': TextEditingController(text: item.result),
               })
           .toList();
 
       networkControllers = worksheet.networks
           .map((item) => {
-                'name': TextEditingController(text: item.name ?? ''),
-                'description':
-                    TextEditingController(text: item.description ?? ''),
-                'result': TextEditingController(text: item.result ?? ''),
+                'name': TextEditingController(text: item.name),
+                'description': TextEditingController(text: item.description),
+                'result': TextEditingController(text: item.result),
               })
           .toList();
     } catch (e) {
@@ -143,8 +140,16 @@ class WorksheetController extends ChangeNotifier {
         final TimeOfDay? time = await showTimePicker(
           context: context,
           initialTime: TimeOfDay.now(),
+          builder: (BuildContext context, Widget? child) {
+            return MediaQuery(
+              data:
+                  MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+              child: child!,
+            );
+          },
         );
         if (time != null) {
+          print(time);
           final DateTime dateTime = DateTime(
             picked.year,
             picked.month,
@@ -152,8 +157,9 @@ class WorksheetController extends ChangeNotifier {
             time.hour,
             time.minute,
           );
+          print(dateTime);
           controller.text =
-              DateFormat("yyyy-MM-dd'T'HH:mm:ss").format(dateTime);
+              DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").format(dateTime);
         } else {
           print('Time selection was canceled');
         }
@@ -168,7 +174,7 @@ class WorksheetController extends ChangeNotifier {
   Future<void> createWorksheet(BuildContext context) async {
     try {
       // Validate required fields
-      if (selectedRoom.isEmpty) {
+      if (selectedRoom == null || selectedRoom!.isEmpty) {
         throw Exception('Room is required');
       }
       if (startTimeController.text.isEmpty) {
@@ -180,10 +186,13 @@ class WorksheetController extends ChangeNotifier {
       if (addedTechnicians.isEmpty) {
         throw Exception('At least one technician is required');
       }
+      if (decodedToken['id'] == null) {
+        throw Exception('User ID is missing in the token');
+      }
 
       WorksheetService worksheetService = WorksheetService();
       NewWorksheetState newWorksheet = NewWorksheetState(
-        room: selectedRoom,
+        room: selectedRoom!,
         startTime: startTimeController.text,
         endTime: endTimeController.text,
         userId: int.parse(decodedToken['id'].toString()),
@@ -215,6 +224,7 @@ class WorksheetController extends ChangeNotifier {
             .toList(),
       );
 
+      print(newWorksheet);
       var response = await worksheetService.newWorksheet(newWorksheet);
       if (response != null) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -241,56 +251,82 @@ class WorksheetController extends ChangeNotifier {
     }
   }
 
-  // Future<void> updateWorksheet(int index) async {
-//   WorksheetService worksheetService = WorksheetService();
-//   NewWorksheetState newWorksheet = NewWorksheetState(
-//     room: selectedRoom,
-//     startTime: startTimeController.text,
-//     endTime: endTimeController.text,
-//     userId: int.parse(decodedToken['id'].toString()),
-//     technicianItems: _technicianControllers
-//         .map((controller) => TechnicianItem(
-//               id: controller.text,
-//             ))
-//         .toList(),
-//     softwareItems: softwareControllers
-//         .map((controller) => SoftwareItem(
-//               name: controller['name']!.text,
-//               description: controller['description']!.text,
-//               result: controller['result']!.text,
-//             ))
-//         .toList(),
-//     hardwareItems: hardwareControllers
-//         .map((controller) => HardwareItem(
-//               name: controller['name']!.text,
-//               description: controller['description']!.text,
-//               result: controller['result']!.text,
-//             ))
-//         .toList(),
-//     networkItems: networkControllers
-//         .map((controller) => NetworkItem(
-//               name: controller['name']!.text,
-//               description: controller['description']!.text,
-//               result: controller['result']!.text,
-//             ))
-//         .toList(),
-//   );
-//   var response = await worksheetService.updateWorksheet(index, newWorksheet);
-//   // print(response);
-//   if (response != null) {
-//     ScaffoldMessenger.of(context).showSnackBar(
-//       const SnackBar(
-//         content: Text('Worksheet updated'),
-//       ),
-//     );
-//     await Future.delayed(const Duration(seconds: 1));
-//     AutoRouter.of(context).replace(const HomeRoute());
-//   } else {
-//     ScaffoldMessenger.of(context).showSnackBar(
-//       const SnackBar(
-//         content: Text('Failed to update worksheet'),
-//       ),
-//     );
-//   }
-// }
+  Future<void> updateWorksheet(BuildContext context, int itemId) async {
+    try {
+      // Validate required fields
+      if (selectedRoom == null || selectedRoom!.isEmpty) {
+        throw Exception('Room is required');
+      }
+      if (startTimeController.text.isEmpty) {
+        throw Exception('Start time is required');
+      }
+      if (endTimeController.text.isEmpty) {
+        throw Exception('End time is required');
+      }
+      if (addedTechnicians.isEmpty) {
+        throw Exception('At least one technician is required');
+      }
+      if (decodedToken['id'] == null) {
+        throw Exception('User ID is missing in the token');
+      }
+
+      WorksheetService worksheetService = WorksheetService();
+      NewWorksheetState updatedWorksheet = NewWorksheetState(
+        room: selectedRoom,
+        startTime: startTimeController.text,
+        endTime: endTimeController.text,
+        userId: int.parse(decodedToken['id'].toString()),
+        technicianItems: addedTechnicians
+            .map((controller) => TechnicianItem(
+                  id: controller.id,
+                ))
+            .toList(),
+        softwareItems: softwareControllers
+            .map((controller) => SoftwareItem(
+                  name: controller['name']!.text,
+                  description: controller['description']!.text,
+                  result: controller['result']!.text,
+                ))
+            .toList(),
+        hardwareItems: hardwareControllers
+            .map((controller) => HardwareItem(
+                  name: controller['name']!.text,
+                  description: controller['description']!.text,
+                  result: controller['result']!.text,
+                ))
+            .toList(),
+        networkItems: networkControllers
+            .map((controller) => NetworkItem(
+                  name: controller['name']!.text,
+                  description: controller['description']!.text,
+                  result: controller['result']!.text,
+                ))
+            .toList(),
+      );
+      var response =
+          await worksheetService.updateWorksheet(itemId, updatedWorksheet);
+      if (response != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Worksheet updated'),
+          ),
+        );
+        await Future.delayed(const Duration(seconds: 1));
+        AutoRouter.of(context).replace(const HomeRoute());
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to update worksheet'),
+          ),
+        );
+      }
+    } catch (e) {
+      print('Error updating worksheet: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: ${e.toString()}'),
+        ),
+      );
+    }
+  }
 }
