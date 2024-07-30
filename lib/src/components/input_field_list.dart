@@ -78,7 +78,7 @@ class _InputFieldListState extends State<InputFieldList> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 8.0),
+                      SizedBox(height: 16.0),
                       TextFormField(
                         controller: widget.controllers[index]['description'],
                         decoration: InputDecoration(
@@ -86,7 +86,7 @@ class _InputFieldListState extends State<InputFieldList> {
                                 '${widget.label} Description ${index + 1}',
                             border: OutlineInputBorder()),
                       ),
-                      SizedBox(height: 8.0),
+                      SizedBox(height: 16.0),
                       TextFormField(
                         controller: widget.controllers[index]['result'],
                         decoration: InputDecoration(

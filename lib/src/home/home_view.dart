@@ -19,12 +19,8 @@ class _HomeViewState extends State<HomeView> {
   @override
   void initState() {
     super.initState();
-    _controller.fetchWorksheets().then((_) {
-      setState(() {});
-    });
-    _controller.decodeToken().then((_) {
-      setState(() {});
-    });
+    _controller.fetchWorksheets().then((_) {});
+    _controller.decodeToken().then((_) {});
   }
 
   void _editItem(int id) {
