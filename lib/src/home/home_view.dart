@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
+
 import 'package:pde_worksheet/routes/app_router.gr.dart';
 import 'package:pde_worksheet/utils/date_time_utils.dart';
-
-import 'home_controller.dart';
+import 'package:pde_worksheet/src/home/home_controller.dart';
 
 @RoutePage(name: 'HomeRoute')
 class HomeView extends StatefulWidget {
@@ -15,6 +15,7 @@ class HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<HomeView> {
   final HomeController _controller = HomeController();
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
@@ -57,6 +58,7 @@ class _HomeViewState extends State<HomeView> {
             return const Center(child: CircularProgressIndicator());
           }
           return ListView.builder(
+            controller: _scrollController,
             padding: const EdgeInsets.all(8.0),
             itemCount: _controller.worksheets.length,
             itemBuilder: (context, index) {
@@ -87,13 +89,13 @@ class _HomeViewState extends State<HomeView> {
                           contentPadding: EdgeInsets.zero,
                           title: Text(
                             'Worksheet Number: ${worksheet.worksheetNumber}',
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 18.0,
                             ),
                           ),
                           subtitle: Text('Room: ${worksheet.room}'),
-                          trailing: Icon(Icons.assignment),
+                          trailing: const Icon(Icons.assignment),
                         ),
                         const SizedBox(height: 10),
                         Text('Start Time: $startTime'),
@@ -105,7 +107,7 @@ class _HomeViewState extends State<HomeView> {
                         ),
                         ...worksheet.technicians.map((tech) => ListTile(
                               contentPadding: EdgeInsets.zero,
-                              leading: Icon(Icons.person),
+                              leading: const Icon(Icons.person),
                               title: Text(tech.fullName),
                             )),
                         const Divider(height: 20, thickness: 1),
@@ -115,7 +117,7 @@ class _HomeViewState extends State<HomeView> {
                         ),
                         ...worksheet.softwares.map((software) => ListTile(
                               contentPadding: EdgeInsets.zero,
-                              leading: Icon(Icons.computer),
+                              leading: const Icon(Icons.computer),
                               title: Text(software.name!),
                               subtitle: Text(
                                   '${software.description} - ${software.result}'),
@@ -127,7 +129,7 @@ class _HomeViewState extends State<HomeView> {
                         ),
                         ...worksheet.hardwares.map((hardware) => ListTile(
                               contentPadding: EdgeInsets.zero,
-                              leading: Icon(Icons.memory),
+                              leading: const Icon(Icons.memory),
                               title: Text(hardware.name!),
                               subtitle: Text(
                                   '${hardware.description} - ${hardware.result}'),
@@ -139,7 +141,7 @@ class _HomeViewState extends State<HomeView> {
                         ),
                         ...worksheet.networks.map((network) => ListTile(
                               contentPadding: EdgeInsets.zero,
-                              leading: Icon(Icons.network_check),
+                              leading: const Icon(Icons.network_check),
                               title: Text(network.name!),
                               subtitle: Text(
                                   '${network.description} - ${network.result}'),
@@ -159,11 +161,17 @@ class _HomeViewState extends State<HomeView> {
         },
         backgroundColor: Colors.blue,
         tooltip: 'Create Worksheet',
-        child: Icon(
+        child: const Icon(
           Icons.add,
           color: Colors.white,
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 }

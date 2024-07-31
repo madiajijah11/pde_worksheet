@@ -264,4 +264,10 @@ class _WorksheetViewState extends State<WorksheetView> {
                   ),
                 ]))));
   }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 }

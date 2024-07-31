@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:auto_route/auto_route.dart';
 
-import 'login_controller.dart';
+import 'package:pde_worksheet/src/login/login_controller.dart';
 
 @RoutePage(name: 'LoginRoute')
 class LoginView extends ConsumerStatefulWidget {

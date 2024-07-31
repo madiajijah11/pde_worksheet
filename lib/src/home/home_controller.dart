@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:pde_worksheet/models/worksheet_state.dart';
 import 'package:pde_worksheet/services/worksheet_service.dart';
 import 'package:pde_worksheet/store/store.dart';
@@ -53,7 +54,6 @@ class HomeController {
   void filterWorksheets() {
     final userId = decodedToken['id'];
     final userRole = decodedToken['accessRight'];
-    // print(decodedToken);
 
     // desc order by createdAt
     worksheets.sort((a, b) => b.createdAt!.compareTo(a.createdAt!));

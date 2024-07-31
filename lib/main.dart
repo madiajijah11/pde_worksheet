@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'src/app.dart';
-import 'src/settings/settings_controller.dart';
-import 'src/settings/settings_service.dart';
+import 'package:pde_worksheet/src/app.dart';
+import 'package:pde_worksheet/src/settings/settings_controller.dart';
+import 'package:pde_worksheet/src/settings/settings_service.dart';
 
 void main() async {
   // Set up the SettingsController, which will glue user settings to multiple

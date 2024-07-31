@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:pde_worksheet/routes/app_router.dart';
 
-import 'settings/settings_controller.dart';
+import 'package:pde_worksheet/routes/app_router.dart';
+import 'package:pde_worksheet/src/settings/settings_controller.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({
