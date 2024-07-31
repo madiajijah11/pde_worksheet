@@ -149,7 +149,6 @@ class WorksheetController extends ChangeNotifier {
           },
         );
         if (time != null) {
-          print(time);
           final DateTime dateTime = DateTime(
             picked.year,
             picked.month,
@@ -157,7 +156,6 @@ class WorksheetController extends ChangeNotifier {
             time.hour,
             time.minute,
           );
-          print(dateTime);
           controller.text =
               DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").format(dateTime);
         } else {
@@ -224,7 +222,6 @@ class WorksheetController extends ChangeNotifier {
             .toList(),
       );
 
-      print(newWorksheet);
       var response = await worksheetService.newWorksheet(newWorksheet);
       if (response != null) {
         ScaffoldMessenger.of(context).showSnackBar(
