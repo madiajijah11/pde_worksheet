@@ -21,23 +21,48 @@ class WorksheetView extends StatefulWidget {
 class _WorksheetViewState extends State<WorksheetView> {
   late WorksheetController _controller;
 
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _controller = WorksheetController();
+
+  //   _controller.decodeToken().then((_) {
+  //     setState(() {});
+  //   });
+  //   _controller.fetchRoom().then((_) {
+  //     setState(() {});
+  //   });
+  //   _controller.fetchTechnician().then((_) {
+  //     setState(() {});
+  //   });
+  //   if (widget.itemId != null) {
+  //     _controller.loadWorksheetData(widget.itemId!);
+  //   }
+  // }
+
   @override
   void initState() {
     super.initState();
     _controller = WorksheetController();
 
-    _controller.decodeToken().then((_) {
+    // Use Future.wait to perform multiple async operations concurrently
+    Future.wait([
+      _controller.decodeToken(),
+      _controller.fetchRoom(),
+      _controller.fetchTechnician(),
+    ]).then((_) {
       setState(() {});
     });
-    _controller.fetchRoom().then((_) {
-      setState(() {});
-    });
-    _controller.fetchTechnician().then((_) {
-      setState(() {});
-    });
+
     if (widget.itemId != null) {
       _controller.loadWorksheetData(widget.itemId!);
     }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -263,11 +288,5 @@ class _WorksheetViewState extends State<WorksheetView> {
                     ),
                   ),
                 ]))));
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
   }
 }

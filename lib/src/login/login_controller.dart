@@ -21,7 +21,13 @@ class LoginController {
         final isAuthenticated = ref.read(authProvider).token != null;
         if (!context.mounted) return;
         if (isAuthenticated) {
-          AutoRouter.of(context).replace(const HomeRoute());
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Login successful'),
+            ),
+          );
+          Future.delayed(const Duration(seconds: 1),
+              () => AutoRouter.of(context).replaceAll([const HomeRoute()]));
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(

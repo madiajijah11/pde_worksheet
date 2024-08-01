@@ -12,15 +12,17 @@ class HomeController {
   final ValueNotifier<bool> isLoading = ValueNotifier(false);
 
   /// Fetches worksheets from the service and updates the state.
-  Future<void> fetchWorksheets() async {
+  Future<List<WorksheetState>> fetchWorksheets() async {
     try {
       isLoading.value = true;
       final fetchedWorksheets = await _worksheetService.getWorksheets();
       worksheets = fetchedWorksheets;
       filterWorksheets();
+      return worksheets; // Return the list of worksheets
     } catch (e) {
       // Handle error
       print('Error fetching worksheets: $e');
+      return []; // Return an empty list in case of error
     } finally {
       isLoading.value = false;
     }

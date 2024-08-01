@@ -172,7 +172,7 @@ class WorksheetController extends ChangeNotifier {
   Future<void> createWorksheet(BuildContext context) async {
     try {
       // Validate required fields
-      if (selectedRoom == null || selectedRoom!.isEmpty) {
+      if (selectedRoom.isEmpty) {
         throw Exception('Room is required');
       }
       if (startTimeController.text.isEmpty) {
@@ -190,7 +190,7 @@ class WorksheetController extends ChangeNotifier {
 
       WorksheetService worksheetService = WorksheetService();
       NewWorksheetState newWorksheet = NewWorksheetState(
-        room: selectedRoom!,
+        room: selectedRoom,
         startTime: startTimeController.text,
         endTime: endTimeController.text,
         userId: int.parse(decodedToken['id'].toString()),
@@ -230,7 +230,7 @@ class WorksheetController extends ChangeNotifier {
           ),
         );
         await Future.delayed(const Duration(seconds: 1));
-        AutoRouter.of(context).replace(const HomeRoute());
+        AutoRouter.of(context).replaceAll([const HomeRoute()]);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -251,7 +251,7 @@ class WorksheetController extends ChangeNotifier {
   Future<void> updateWorksheet(BuildContext context, int itemId) async {
     try {
       // Validate required fields
-      if (selectedRoom == null || selectedRoom!.isEmpty) {
+      if (selectedRoom.isEmpty) {
         throw Exception('Room is required');
       }
       if (startTimeController.text.isEmpty) {
@@ -309,7 +309,7 @@ class WorksheetController extends ChangeNotifier {
           ),
         );
         await Future.delayed(const Duration(seconds: 1));
-        AutoRouter.of(context).replace(const HomeRoute());
+        AutoRouter.of(context).replaceAll([const HomeRoute()]);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(

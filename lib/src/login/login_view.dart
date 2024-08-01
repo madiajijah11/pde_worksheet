@@ -16,6 +16,13 @@ class _LoginViewState extends ConsumerState<LoginView> {
   final LoginController _controller = LoginController();
 
   @override
+  void dispose() {
+    _controller.usernameController.dispose();
+    _controller.passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(

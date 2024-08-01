@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
+import 'package:pde_worksheet/models/worksheet_state.dart';
 
 import 'package:pde_worksheet/routes/app_router.gr.dart';
 import 'package:pde_worksheet/utils/date_time_utils.dart';
@@ -13,18 +14,32 @@ class HomeView extends StatefulWidget {
   State<HomeView> createState() => _HomeViewState();
 }
 
-class _HomeViewState extends State<HomeView> {
+class _HomeViewState extends State<HomeView>
+    with AutoRouteAwareStateMixin<HomeView> {
   final HomeController _controller = HomeController();
   final ScrollController _scrollController = ScrollController();
+  List<WorksheetState> _allWorksheets = [];
+  List<WorksheetState> _displayedWorksheets = [];
+  int _currentChunkIndex = 0;
+  final int _chunkSize = 10;
 
   @override
   void initState() {
     super.initState();
-    _controller.fetchWorksheets().then((_) {
-      setState(() {});
-    });
+    _fetchData();
     _controller.decodeToken().then((_) {
       setState(() {});
+    });
+  }
+
+  void _loadNextChunk() {
+    final nextChunk = _allWorksheets
+        .skip(_currentChunkIndex * _chunkSize)
+        .take(_chunkSize)
+        .toList();
+    setState(() {
+      _displayedWorksheets.addAll(nextChunk);
+      _currentChunkIndex++;
     });
   }
 
@@ -34,6 +49,27 @@ class _HomeViewState extends State<HomeView> {
 
   void _deleteItem(int id) {
     print('Deleting item at id: $id');
+  }
+
+  void _fetchData() {
+    _controller.fetchWorksheets().then((worksheets) {
+      setState(() {
+        _allWorksheets = worksheets;
+        _loadNextChunk();
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didPopNext() {
+    super.didPopNext();
+    _fetchData();
   }
 
   @override
@@ -60,9 +96,14 @@ class _HomeViewState extends State<HomeView> {
           return ListView.builder(
             controller: _scrollController,
             padding: const EdgeInsets.all(8.0),
-            itemCount: _controller.worksheets.length,
+            itemCount: _displayedWorksheets.length + 1,
             itemBuilder: (context, index) {
-              final worksheet = _controller.worksheets[index];
+              if (index == _displayedWorksheets.length) {
+                return _currentChunkIndex * _chunkSize < _allWorksheets.length
+                    ? const Center(child: CircularProgressIndicator())
+                    : const SizedBox.shrink();
+              }
+              final worksheet = _displayedWorksheets[index];
               final startTime = formatDateTime(worksheet.startTime!);
               final endTime = formatDateTime(worksheet.endTime!);
               return Card(
@@ -167,11 +208,5 @@ class _HomeViewState extends State<HomeView> {
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
   }
 }
