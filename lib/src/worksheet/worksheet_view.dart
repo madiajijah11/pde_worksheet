@@ -12,7 +12,9 @@ import 'package:pde_worksheet/src/worksheet/worksheet_controller.dart';
 @RoutePage(name: 'WorksheetRoute')
 class WorksheetView extends StatefulWidget {
   final int? itemId;
-  const WorksheetView({super.key, this.itemId});
+  final VoidCallback? onWorksheetChanged;
+
+  const WorksheetView({super.key, this.itemId, this.onWorksheetChanged});
 
   @override
   State<WorksheetView> createState() => _WorksheetViewState();
@@ -57,12 +59,18 @@ class _WorksheetViewState extends State<WorksheetView> {
     if (widget.itemId != null) {
       _controller.loadWorksheetData(widget.itemId!);
     }
+
+    _controller.addListener(() {
+      if (widget.onWorksheetChanged != null) {
+        widget.onWorksheetChanged!();
+      }
+    });
   }
 
   @override
   void dispose() {
-    _controller.dispose();
     super.dispose();
+    _controller.dispose();
   }
 
   @override
@@ -267,9 +275,15 @@ class _WorksheetViewState extends State<WorksheetView> {
                                     // Update existing worksheet
                                     _controller.updateWorksheet(
                                         context, widget.itemId!);
+                                    if (widget.onWorksheetChanged != null) {
+                                      widget.onWorksheetChanged!();
+                                    }
                                   } else {
                                     // Create new worksheet
                                     _controller.createWorksheet(context);
+                                    if (widget.onWorksheetChanged != null) {
+                                      widget.onWorksheetChanged!();
+                                    }
                                   }
                                 }
                               }

@@ -5,11 +5,17 @@ import 'package:pde_worksheet/services/worksheet_service.dart';
 import 'package:pde_worksheet/store/store.dart';
 import 'package:pde_worksheet/utils/token_utils.dart';
 
-class HomeController {
+class HomeController extends ChangeNotifier {
   final WorksheetService _worksheetService = WorksheetService();
   List<WorksheetState> worksheets = [];
   Map<String, dynamic> decodedToken = {};
   final ValueNotifier<bool> isLoading = ValueNotifier(false);
+
+  @override
+  void dispose() {
+    super.dispose();
+    isLoading.dispose();
+  }
 
   /// Fetches worksheets from the service and updates the state.
   Future<List<WorksheetState>> fetchWorksheets() async {
@@ -97,9 +103,5 @@ class HomeController {
         );
       },
     );
-  }
-
-  void dispose() {
-    isLoading.dispose();
   }
 }

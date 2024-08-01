@@ -26,10 +26,17 @@ class _HomeViewState extends State<HomeView>
   @override
   void initState() {
     super.initState();
-    _fetchData();
+    fetchData();
     _controller.decodeToken().then((_) {
       setState(() {});
     });
+    _controller.addListener(_updateState);
+  }
+
+  void _updateState() {
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   void _loadNextChunk() {
@@ -43,18 +50,26 @@ class _HomeViewState extends State<HomeView>
     });
   }
 
-  void _editItem(int id) {
-    AutoRouter.of(context).navigate(WorksheetRoute(itemId: id));
+  void _editItem(int id) async {
+    AutoRouter.of(context)
+        .navigate(WorksheetRoute(itemId: id, onWorksheetChanged: fetchData));
+  }
+
+  void _createNewItem() async {
+    AutoRouter.of(context)
+        .navigate(WorksheetRoute(onWorksheetChanged: fetchData));
   }
 
   void _deleteItem(int id) {
     print('Deleting item at id: $id');
   }
 
-  void _fetchData() {
+  void fetchData() {
     _controller.fetchWorksheets().then((worksheets) {
       setState(() {
         _allWorksheets = worksheets;
+        _displayedWorksheets.clear();
+        _currentChunkIndex = 0;
         _loadNextChunk();
       });
     });
@@ -62,14 +77,9 @@ class _HomeViewState extends State<HomeView>
 
   @override
   void dispose() {
-    _scrollController.dispose();
     super.dispose();
-  }
-
-  @override
-  void didPopNext() {
-    super.didPopNext();
-    _fetchData();
+    _scrollController.dispose();
+    _controller.removeListener(_updateState);
   }
 
   @override
@@ -198,7 +208,7 @@ class _HomeViewState extends State<HomeView>
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          AutoRouter.of(context).navigate(WorksheetRoute());
+          _createNewItem();
         },
         backgroundColor: Colors.blue,
         tooltip: 'Create Worksheet',

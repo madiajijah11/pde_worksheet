@@ -24,8 +24,8 @@ class _ProfileViewState extends State<ProfileView> {
 
   @override
   void dispose() {
-    _controller.removeListener(_updateState);
     super.dispose();
+    _controller.removeListener(_updateState);
   }
 
   void _updateState() {

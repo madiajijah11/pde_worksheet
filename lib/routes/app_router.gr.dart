@@ -58,6 +58,7 @@ abstract class $AppRouter extends _i6.RootStackRouter {
         child: _i5.WorksheetView(
           key: args.key,
           itemId: args.itemId,
+          onWorksheetChanged: args.onWorksheetChanged,
         ),
       );
     },
@@ -152,12 +153,14 @@ class WorksheetRoute extends _i6.PageRouteInfo<WorksheetRouteArgs> {
   WorksheetRoute({
     _i7.Key? key,
     int? itemId,
+    void Function()? onWorksheetChanged,
     List<_i6.PageRouteInfo>? children,
   }) : super(
           WorksheetRoute.name,
           args: WorksheetRouteArgs(
             key: key,
             itemId: itemId,
+            onWorksheetChanged: onWorksheetChanged,
           ),
           initialChildren: children,
         );
@@ -172,14 +175,17 @@ class WorksheetRouteArgs {
   const WorksheetRouteArgs({
     this.key,
     this.itemId,
+    this.onWorksheetChanged,
   });
 
   final _i7.Key? key;
 
   final int? itemId;
 
+  final void Function()? onWorksheetChanged;
+
   @override
   String toString() {
-    return 'WorksheetRouteArgs{key: $key, itemId: $itemId}';
+    return 'WorksheetRouteArgs{key: $key, itemId: $itemId, onWorksheetChanged: $onWorksheetChanged}';
   }
 }

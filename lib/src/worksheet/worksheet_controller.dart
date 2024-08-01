@@ -238,6 +238,7 @@ class WorksheetController extends ChangeNotifier {
           ),
         );
       }
+      notifyListeners();
     } catch (e) {
       print('Error creating worksheet: $e');
       ScaffoldMessenger.of(context).showSnackBar(
@@ -317,6 +318,7 @@ class WorksheetController extends ChangeNotifier {
           ),
         );
       }
+      notifyListeners();
     } catch (e) {
       print('Error updating worksheet: $e');
       ScaffoldMessenger.of(context).showSnackBar(
