@@ -169,9 +169,7 @@ class _HomeViewState extends State<HomeView>
                         ...worksheet.softwares.map((software) => ListTile(
                               contentPadding: EdgeInsets.zero,
                               leading: const Icon(Icons.computer),
-                              title: Text(software.name!),
-                              subtitle: Text(
-                                  '${software.description} - ${software.result}'),
+                              title: Text(software.description!),
                             )),
                         const Divider(height: 20, thickness: 1),
                         const Text(
@@ -181,9 +179,7 @@ class _HomeViewState extends State<HomeView>
                         ...worksheet.hardwares.map((hardware) => ListTile(
                               contentPadding: EdgeInsets.zero,
                               leading: const Icon(Icons.memory),
-                              title: Text(hardware.name!),
-                              subtitle: Text(
-                                  '${hardware.description} - ${hardware.result}'),
+                              title: Text(hardware.description!),
                             )),
                         const Divider(height: 20, thickness: 1),
                         const Text(
@@ -193,9 +189,7 @@ class _HomeViewState extends State<HomeView>
                         ...worksheet.networks.map((network) => ListTile(
                               contentPadding: EdgeInsets.zero,
                               leading: const Icon(Icons.network_check),
-                              title: Text(network.name!),
-                              subtitle: Text(
-                                  '${network.description} - ${network.result}'),
+                              title: Text(network.description!),
                             )),
                       ],
                     ),
