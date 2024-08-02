@@ -31,6 +31,22 @@ class _HomeViewState extends State<HomeView>
       setState(() {});
     });
     _controller.addListener(_updateState);
+
+    // Add listener to scroll controller
+    _scrollController.addListener(() {
+      if (_scrollController.position.atEdge) {
+        if (_scrollController.position.pixels != 0) {
+          _loadNextChunk();
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.removeListener(_updateState);
+    _scrollController.dispose();
+    super.dispose();
   }
 
   void _updateState() {
@@ -73,13 +89,6 @@ class _HomeViewState extends State<HomeView>
         _loadNextChunk();
       });
     });
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _scrollController.dispose();
-    _controller.removeListener(_updateState);
   }
 
   @override
