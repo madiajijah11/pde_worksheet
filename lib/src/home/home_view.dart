@@ -40,6 +40,7 @@ class _HomeViewState extends State<HomeView>
         _loadNextChunk();
       });
     });
+    _scrollController.addListener(_onScroll);
   }
 
   void fetchData() {
@@ -56,6 +57,13 @@ class _HomeViewState extends State<HomeView>
   void _updateState() {
     if (mounted) {
       setState(() {});
+    }
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent) {
+      _loadNextChunk();
     }
   }
 
@@ -86,9 +94,9 @@ class _HomeViewState extends State<HomeView>
 
   @override
   void dispose() {
-    super.dispose();
     _scrollController.dispose();
     _controller.removeListener(_updateState);
+    super.dispose();
   }
 
   @override
