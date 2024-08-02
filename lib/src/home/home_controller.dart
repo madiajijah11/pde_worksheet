@@ -28,6 +28,7 @@ class HomeController extends ChangeNotifier {
       final fetchedWorksheets = await _worksheetService.getWorksheets();
       worksheets = fetchedWorksheets;
       filterWorksheets(); // Add this line to filter worksheets after fetching
+      _worksheetStreamController.add(worksheets);
       return worksheets;
     });
   }
@@ -61,8 +62,6 @@ class HomeController extends ChangeNotifier {
         return worksheet.userId == userId;
       }
     }).toList();
-
-    _worksheetStreamController.add(worksheets);
   }
 
   void showEditDeleteDialog(
