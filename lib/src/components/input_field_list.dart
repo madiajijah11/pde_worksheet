@@ -29,9 +29,7 @@ class _InputFieldListState extends State<InputFieldList> {
                 onPressed: () {
                   setState(() {
                     widget.controllers.add({
-                      'name': TextEditingController(),
                       'description': TextEditingController(),
-                      'result': TextEditingController(),
                     });
                   });
                 },
@@ -61,11 +59,14 @@ class _InputFieldListState extends State<InputFieldList> {
                         children: [
                           Expanded(
                             child: TextFormField(
-                              controller: widget.controllers[index]['name'],
+                              controller: widget.controllers[index]
+                                  ['description'],
+                              maxLines: 2,
                               decoration: InputDecoration(
-                                  labelText:
-                                      '${widget.label} Name ${index + 1}',
-                                  border: OutlineInputBorder()),
+                                labelText:
+                                    '${widget.label} Description ${index + 1}',
+                                border: OutlineInputBorder(),
+                              ),
                             ),
                           ),
                           IconButton(
@@ -77,21 +78,6 @@ class _InputFieldListState extends State<InputFieldList> {
                             },
                           ),
                         ],
-                      ),
-                      SizedBox(height: 16.0),
-                      TextFormField(
-                        controller: widget.controllers[index]['description'],
-                        decoration: InputDecoration(
-                            labelText:
-                                '${widget.label} Description ${index + 1}',
-                            border: OutlineInputBorder()),
-                      ),
-                      SizedBox(height: 16.0),
-                      TextFormField(
-                        controller: widget.controllers[index]['result'],
-                        decoration: InputDecoration(
-                            labelText: '${widget.label} Result ${index + 1}',
-                            border: OutlineInputBorder()),
                       ),
                     ],
                   ),

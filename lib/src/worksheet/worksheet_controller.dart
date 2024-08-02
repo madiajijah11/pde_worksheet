@@ -54,25 +54,19 @@ class WorksheetController extends ChangeNotifier {
 
       softwareControllers = worksheet.softwares
           .map((item) => {
-                'name': TextEditingController(text: item.name),
                 'description': TextEditingController(text: item.description),
-                'result': TextEditingController(text: item.result),
               })
           .toList();
 
       hardwareControllers = worksheet.hardwares
           .map((item) => {
-                'name': TextEditingController(text: item.name),
                 'description': TextEditingController(text: item.description),
-                'result': TextEditingController(text: item.result),
               })
           .toList();
 
       networkControllers = worksheet.networks
           .map((item) => {
-                'name': TextEditingController(text: item.name),
                 'description': TextEditingController(text: item.description),
-                'result': TextEditingController(text: item.result),
               })
           .toList();
     } catch (e) {
@@ -201,23 +195,17 @@ class WorksheetController extends ChangeNotifier {
             .toList(),
         softwareItems: softwareControllers
             .map((controller) => SoftwareItem(
-                  name: controller['name']!.text,
                   description: controller['description']!.text,
-                  result: controller['result']!.text,
                 ))
             .toList(),
         hardwareItems: hardwareControllers
             .map((controller) => HardwareItem(
-                  name: controller['name']!.text,
                   description: controller['description']!.text,
-                  result: controller['result']!.text,
                 ))
             .toList(),
         networkItems: networkControllers
             .map((controller) => NetworkItem(
-                  name: controller['name']!.text,
                   description: controller['description']!.text,
-                  result: controller['result']!.text,
                 ))
             .toList(),
       );
@@ -281,23 +269,17 @@ class WorksheetController extends ChangeNotifier {
             .toList(),
         softwareItems: softwareControllers
             .map((controller) => SoftwareItem(
-                  name: controller['name']!.text,
                   description: controller['description']!.text,
-                  result: controller['result']!.text,
                 ))
             .toList(),
         hardwareItems: hardwareControllers
             .map((controller) => HardwareItem(
-                  name: controller['name']!.text,
                   description: controller['description']!.text,
-                  result: controller['result']!.text,
                 ))
             .toList(),
         networkItems: networkControllers
             .map((controller) => NetworkItem(
-                  name: controller['name']!.text,
                   description: controller['description']!.text,
-                  result: controller['result']!.text,
                 ))
             .toList(),
       );

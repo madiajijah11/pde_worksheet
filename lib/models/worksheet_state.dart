@@ -104,77 +104,47 @@ class Technician {
 }
 
 class Software {
-  final String? name;
   final String? description;
-  final String? result;
 
-  Software({
-    required this.name,
-    required this.description,
-    required this.result,
-  });
+  Software({required this.description});
 
   factory Software.fromJson(Map<String, dynamic> json) {
-    return Software(
-      name: json['name'],
-      description: json['description'],
-      result: json['result'],
-    );
+    return Software(description: json['description']);
   }
 
   @override
   String toString() {
-    return 'Software(name: $name, description: $description, result: $result)';
+    return 'Software(description: $description)';
   }
 }
 
 class Hardware {
-  final String? name;
   final String? description;
-  final String? result;
 
-  Hardware({
-    required this.name,
-    required this.description,
-    required this.result,
-  });
+  Hardware({required this.description});
 
   factory Hardware.fromJson(Map<String, dynamic> json) {
-    return Hardware(
-      name: json['name'],
-      description: json['description'],
-      result: json['result'],
-    );
+    return Hardware(description: json['description']);
   }
 
   @override
   String toString() {
-    return 'Hardware(name: $name, description: $description, result: $result)';
+    return 'Hardware(description: $description)';
   }
 }
 
 class Network {
-  final String? name;
   final String? description;
-  final String? result;
 
-  Network({
-    required this.name,
-    required this.description,
-    required this.result,
-  });
+  Network({required this.description});
 
   factory Network.fromJson(Map<String, dynamic> json) {
-    return Network(
-      name: json['name'],
-      description: json['description'],
-      result: json['result'],
-    );
+    return Network(description: json['description']);
   }
 
   @override
   String toString() {
-    return 'Network(name: $name, description: $description, result: $result)';
+    return 'Network(description: $description)';
   }
 }
 
@@ -267,92 +237,59 @@ class TechnicianItem {
 }
 
 class SoftwareItem {
-  final String? name;
   final String? description;
-  final String? result;
 
-  SoftwareItem(
-      {required this.name, required this.description, required this.result});
+  SoftwareItem({required this.description});
 
   factory SoftwareItem.fromJson(Map<String, dynamic> json) {
-    return SoftwareItem(
-      name: json['name'],
-      description: json['description'],
-      result: json['result'],
-    );
+    return SoftwareItem(description: json['description']);
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'name': name,
-      'description': description,
-      'result': result,
-    };
+    return {'description': description};
   }
 
   @override
   String toString() {
-    return 'SoftwareItem(name: $name, description: $description, result: $result)';
+    return 'SoftwareItem(description: $description)';
   }
 }
 
 class HardwareItem {
-  final String? name;
   final String? description;
-  final String? result;
 
-  HardwareItem(
-      {required this.name, required this.description, required this.result});
+  HardwareItem({required this.description});
 
   factory HardwareItem.fromJson(Map<String, dynamic> json) {
-    return HardwareItem(
-      name: json['name'],
-      description: json['description'],
-      result: json['result'],
-    );
+    return HardwareItem(description: json['description']);
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'name': name,
-      'description': description,
-      'result': result,
-    };
+    return {'description': description};
   }
 
   @override
   String toString() {
-    return 'HardwareItem(name: $name, description: $description, result: $result)';
+    return 'HardwareItem(description: $description)';
   }
 }
 
 class NetworkItem {
-  final String? name;
   final String? description;
-  final String? result;
 
-  NetworkItem(
-      {required this.name, required this.description, required this.result});
+  NetworkItem({required this.description});
 
   factory NetworkItem.fromJson(Map<String, dynamic> json) {
-    return NetworkItem(
-      name: json['name'],
-      description: json['description'],
-      result: json['result'],
-    );
+    return NetworkItem(description: json['description']);
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'name': name,
-      'description': description,
-      'result': result,
-    };
+    return {'description': description};
   }
 
   @override
   String toString() {
-    return 'NetworkItem(name: $name, description: $description, result: $result)';
+    return 'NetworkItem(description: $description)';
   }
 }
 
