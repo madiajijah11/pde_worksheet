@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
-import 'package:pde_worksheet/models/worksheet_state.dart';
 
+import 'package:pde_worksheet/models/worksheet_state.dart';
 import 'package:pde_worksheet/routes/app_router.gr.dart';
+import 'package:pde_worksheet/src/components/section_list_tile.dart';
 import 'package:pde_worksheet/utils/date_time_utils.dart';
 import 'package:pde_worksheet/src/home/home_controller.dart';
 
@@ -31,22 +32,25 @@ class _HomeViewState extends State<HomeView>
       setState(() {});
     });
     _controller.addListener(_updateState);
-
-    // Add listener to scroll controller
-    _scrollController.addListener(() {
-      if (_scrollController.position.atEdge) {
-        if (_scrollController.position.pixels != 0) {
-          _loadNextChunk();
-        }
-      }
+    _controller.worksheetStream.listen((worksheets) {
+      setState(() {
+        _allWorksheets = worksheets;
+        _displayedWorksheets.clear();
+        _currentChunkIndex = 0;
+        _loadNextChunk();
+      });
     });
   }
 
-  @override
-  void dispose() {
-    _controller.removeListener(_updateState);
-    _scrollController.dispose();
-    super.dispose();
+  void fetchData() {
+    _controller.fetchWorksheets().then((worksheets) {
+      setState(() {
+        _allWorksheets = worksheets;
+        _displayedWorksheets.clear();
+        _currentChunkIndex = 0;
+        _loadNextChunk();
+      });
+    });
   }
 
   void _updateState() {
@@ -80,15 +84,11 @@ class _HomeViewState extends State<HomeView>
     print('Deleting item at id: $id');
   }
 
-  void fetchData() {
-    _controller.fetchWorksheets().then((worksheets) {
-      setState(() {
-        _allWorksheets = worksheets;
-        _displayedWorksheets.clear();
-        _currentChunkIndex = 0;
-        _loadNextChunk();
-      });
-    });
+  @override
+  void dispose() {
+    super.dispose();
+    _scrollController.dispose();
+    _controller.removeListener(_updateState);
   }
 
   @override
@@ -160,46 +160,34 @@ class _HomeViewState extends State<HomeView>
                         const SizedBox(height: 10),
                         Text('Start Time: $startTime'),
                         Text('End Time: $endTime'),
-                        const Divider(height: 20, thickness: 1),
-                        const Text(
-                          'Technicians:',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                        SectionListTile(
+                          title: 'Technicians:',
+                          icon: Icons.person,
+                          items: worksheet.technicians
+                              .map((tech) => tech.fullName)
+                              .toList(),
                         ),
-                        ...worksheet.technicians.map((tech) => ListTile(
-                              contentPadding: EdgeInsets.zero,
-                              leading: const Icon(Icons.person),
-                              title: Text(tech.fullName),
-                            )),
-                        const Divider(height: 20, thickness: 1),
-                        const Text(
-                          'Softwares:',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                        SectionListTile(
+                          title: 'Softwares:',
+                          icon: Icons.computer,
+                          items: worksheet.softwares
+                              .map((software) => software.description!)
+                              .toList(),
                         ),
-                        ...worksheet.softwares.map((software) => ListTile(
-                              contentPadding: EdgeInsets.zero,
-                              leading: const Icon(Icons.computer),
-                              title: Text(software.description!),
-                            )),
-                        const Divider(height: 20, thickness: 1),
-                        const Text(
-                          'Hardwares:',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                        SectionListTile(
+                          title: 'Hardwares:',
+                          icon: Icons.memory,
+                          items: worksheet.hardwares
+                              .map((hardware) => hardware.description!)
+                              .toList(),
                         ),
-                        ...worksheet.hardwares.map((hardware) => ListTile(
-                              contentPadding: EdgeInsets.zero,
-                              leading: const Icon(Icons.memory),
-                              title: Text(hardware.description!),
-                            )),
-                        const Divider(height: 20, thickness: 1),
-                        const Text(
-                          'Networks:',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                        SectionListTile(
+                          title: 'Networks:',
+                          icon: Icons.network_check,
+                          items: worksheet.networks
+                              .map((network) => network.description!)
+                              .toList(),
                         ),
-                        ...worksheet.networks.map((network) => ListTile(
-                              contentPadding: EdgeInsets.zero,
-                              leading: const Icon(Icons.network_check),
-                              title: Text(network.description!),
-                            )),
                       ],
                     ),
                   ),

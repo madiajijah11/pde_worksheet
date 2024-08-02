@@ -1,69 +1,57 @@
 import 'package:flutter/material.dart';
-
 import 'package:pde_worksheet/models/worksheet_state.dart';
 import 'package:pde_worksheet/services/worksheet_service.dart';
 import 'package:pde_worksheet/store/store.dart';
 import 'package:pde_worksheet/utils/token_utils.dart';
+import 'dart:async';
 
 class HomeController extends ChangeNotifier {
   final WorksheetService _worksheetService = WorksheetService();
   List<WorksheetState> worksheets = [];
   Map<String, dynamic> decodedToken = {};
   final ValueNotifier<bool> isLoading = ValueNotifier(false);
+  final StreamController<List<WorksheetState>> _worksheetStreamController =
+      StreamController.broadcast();
+
+  Stream<List<WorksheetState>> get worksheetStream =>
+      _worksheetStreamController.stream;
 
   @override
   void dispose() {
     super.dispose();
     isLoading.dispose();
+    _worksheetStreamController.close();
   }
 
-  /// Fetches worksheets from the service and updates the state.
   Future<List<WorksheetState>> fetchWorksheets() async {
-    try {
-      isLoading.value = true;
+    return _executeWithLoading(() async {
       final fetchedWorksheets = await _worksheetService.getWorksheets();
       worksheets = fetchedWorksheets;
-      filterWorksheets();
-      return worksheets; // Return the list of worksheets
-    } catch (e) {
-      // Handle error
-      print('Error fetching worksheets: $e');
-      return []; // Return an empty list in case of error
-    } finally {
-      isLoading.value = false;
-    }
+      filterWorksheets(); // Add this line to filter worksheets after fetching
+      return worksheets;
+    });
   }
 
-  /// Decodes the token and filters worksheets based on user role.
   Future<void> decodeToken() async {
-    try {
+    await _executeWithErrorHandling(() async {
       final token = await _getToken();
       if (token != null) {
         decodedToken = JWT().decodeToken(token);
+        filterWorksheets();
       }
-    } catch (e) {
-      // Handle error
-      print('Error decoding token: $e');
-    }
+    });
   }
 
-  /// Retrieves the token from secure storage.
   Future<String?> _getToken() async {
-    try {
+    return _executeWithErrorHandling(() async {
       return await SecureStorage.read('token');
-    } catch (e) {
-      // Handle error
-      print('Error getting token: $e');
-      return null;
-    }
+    });
   }
 
-  /// Filters worksheets based on the user's role and ID.
   void filterWorksheets() {
     final userId = decodedToken['id'];
     final userRole = decodedToken['accessRight'];
 
-    // desc order by createdAt
     worksheets.sort((a, b) => b.createdAt!.compareTo(a.createdAt!));
 
     worksheets = worksheets.where((worksheet) {
@@ -73,33 +61,66 @@ class HomeController extends ChangeNotifier {
         return worksheet.userId == userId;
       }
     }).toList();
+
+    _worksheetStreamController.add(worksheets);
   }
 
   void showEditDeleteDialog(
       BuildContext context, String role, Function onEdit, Function onDelete) {
+    _showDialog(
+      context,
+      'Edit or Delete Item',
+      'Choose an action',
+      [
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+            onEdit();
+          },
+          child: Text('Edit'),
+        ),
+        if (role == 'SUPERADMIN' || role == 'ADMIN')
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              onDelete();
+            },
+            child: Text('Delete'),
+          ),
+      ],
+    );
+  }
+
+  Future<T> _executeWithLoading<T>(Future<T> Function() action) async {
+    try {
+      isLoading.value = true;
+      return await action();
+    } catch (e) {
+      print('Error: $e');
+      return Future.error(e);
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<T> _executeWithErrorHandling<T>(Future<T> Function() action) async {
+    try {
+      return await action();
+    } catch (e) {
+      print('Error: $e');
+      return Future.error(e);
+    }
+  }
+
+  void _showDialog(BuildContext context, String title, String content,
+      List<Widget> actions) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Edit or Delete Item'),
-          content: Text('Choose an action'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                onEdit();
-              },
-              child: Text('Edit'),
-            ),
-            if (role == 'SUPERADMIN' || role == 'ADMIN')
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  onDelete();
-                },
-                child: Text('Delete'),
-              ),
-          ],
+          title: Text(title),
+          content: Text(content),
+          actions: actions,
         );
       },
     );
