@@ -78,14 +78,14 @@ class HomeController extends ChangeNotifier {
           },
           child: Text('Edit'),
         ),
-        if (role == 'SUPERADMIN' || role == 'ADMIN')
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              onDelete();
-            },
-            child: Text('Delete'),
-          ),
+        // if (role == 'SUPERADMIN' || role == 'ADMIN')
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+            onDelete();
+          },
+          child: Text('Delete'),
+        ),
       ],
     );
   }
